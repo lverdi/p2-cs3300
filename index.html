@@ -2,7 +2,127 @@
 <head>
 <title>PROJECT 2</title>
 <script src="scripts/d3.js"></script>
+
+<style>
+body{
+  background-color: #321f3f;
+  font-family: 'Oswald', sans-serif;
+}
+
+h1{
+  display: inline-block;
+  vertical-align: middle;
+  color: #eaebe6;
+}
+
+p{
+	color: #eaebe6;
+}
+
+#title{
+  width: 70%;
+  height: auto;
+  margin: auto;
+  
+}
+
+#one, #two{
+	margin:1em;
+  padding: 1em;
+  border: solid 1px;
+  display: block;
+  margin:auto;
+  background-size: 700px 470px;
+}
+</style>
 </head>
 <body>
+	<div id = "title">
+		<h1>An Analysis on Lyrics from Popular songs in relation to the English Language and cultural trends.</h1>
+		<p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce finibus congue nulla et hendrerit. Phasellus interdum sit amet massa ut ornare. Praesent consectetur molestie dui, quis sollicitudin turpis placerat a. Integer diam lectus, efficitur vitae ex quis, dignissim finibus ipsum. Donec dictum ut nulla quis pharetra. Maecenas faucibus, urna a scelerisque ultrices, arcu neque tincidunt urna, quis aliquam arcu sapien sit amet enim. Quisque mollis finibus lacinia. Suspendisse non vulputate urna. Proin bibendum rutrum diam, sed euismod lorem commodo sit amet. Curabitur tincidunt condimentum nulla, auctor varius enim mattis a. Curabitur eget elit nec libero tincidunt tristique. Sed accumsan leo ac nibh congue tempus. </p>
+	</div>
+
+	<svg id="one" width='800' height='470'></svg>
+	<svg id="two" width='800' height='470'></svg>
+	<script>
+
+	d3.csv("words.csv", function(data) {
+		data.forEach(function(d) {
+			d.year = +d.year;
+		});
+		console.log(data[0]);
+		var svg = d3.select("#one");
+		var xScale = d3.scaleLinear()
+		.domain([1960, 2014])
+		.range([30, 790]); 
+
+		var count = 0;
+		for (var i = 0; i < data.length; i++){
+			count = i%10;
+			svg.append("text")
+				.attr("text-anchor","middle")
+					.attr("x",10+xScale(data[i].year))
+					.attr("y",30 + 40*count)
+					.attr("font-size",30)
+					.text(data[i].word);
+		}
+			
+		
+
+	});
+
+	d3.csv("us-marriages-divorces-1867-2014.csv", function(data) {
+  		data.forEach(function(d) {
+    	d.Year = +d.Year;
+    	d.Marriages_per_1000 = +d.Marriages_per_1000;
+    	d.Divorces_per_1000 = +d.Divorces_per_1000;
+    	
+  		});
+  		console.log(data[0]);
+
+  		var xScale = d3.scaleLinear()
+		.domain([1960, 2014])
+		.range([30, 790]); 
+
+		var yScale = d3.scaleLinear()
+		.domain([0.0, 17.0])
+		.range([470.0, 30.0]);
+
+		var MarriageLineGenerator = d3.line()
+    	.x(function(d) { return xScale(d.Year); }) 
+    	.y(function(d) { return yScale(d.Marriages_per_1000); }) 
+    	.curve(d3.curveMonotoneX) 
+
+    	var DivorceLineGenerator = d3.line()
+    	.x(function(d) { return xScale(d.Year); }) 
+    	.y(function(d) { return yScale(d.Divorces_per_1000); })  
+    	.curve(d3.curveMonotoneX) 
+
+		var svg = d3.select("#one");
+		
+
+		svg.append("g")
+    	.attr("class", "y axis")
+    	.call(d3.axisLeft(yScale)); 
+
+		svg.append("path")
+    	.datum(data) 
+    	.attr("class", "line") 
+    	.attr("stroke","orange")
+    	.attr("stroke-width",5) 
+    	.attr("fill","none")
+    	.attr("d", MarriageLineGenerator);  
+
+    	svg.append("path")
+    	.datum(data) 
+    	.attr("class", "line") 
+    	.attr("stroke","red")
+    	.attr("stroke-width",5) 
+    	.attr("fill","none")
+    	.attr("d", DivorceLineGenerator); 
+	});
+
+	</script>
+
 </body>
 </html>
