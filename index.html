@@ -4,44 +4,45 @@
 <script src="scripts/d3.js"></script>
 
 <style>
+@import
+url('https://fonts.googleapis.com/css?family=Raleway:300,400,700,900');
 body{
-  background-color: #321f3f;
-  font-family: 'Oswald', sans-serif;
+  background-color: #C6F1E7;
+  font-family: 'Raleway', sans-serif;
 }
 
 h1{
   display: inline-block;
   vertical-align: middle;
-  color: #eaebe6;
+  
+  font-size:5em;
 }
 
-p{
-	color: #eaebe6;
-}
+
 
 #title{
-  width: 70%;
+  width: 80%;
   height: auto;
   margin: auto;
   
 }
 
-#one, #two{
-	margin:1em;
+#zero, #one, #two{
+margin:1em;
   padding: 1em;
   border: solid 1px;
   display: block;
   margin:auto;
-  background-size: 700px 470px;
+  background-color:#F0FFF3;
 }
 </style>
 </head>
 <body>
 	<div id = "title">
-		<h1>An Analysis on Lyrics from Popular songs in relation to the English Language and cultural trends.</h1>
-		<p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce finibus congue nulla et hendrerit. Phasellus interdum sit amet massa ut ornare. Praesent consectetur molestie dui, quis sollicitudin turpis placerat a. Integer diam lectus, efficitur vitae ex quis, dignissim finibus ipsum. Donec dictum ut nulla quis pharetra. Maecenas faucibus, urna a scelerisque ultrices, arcu neque tincidunt urna, quis aliquam arcu sapien sit amet enim. Quisque mollis finibus lacinia. Suspendisse non vulputate urna. Proin bibendum rutrum diam, sed euismod lorem commodo sit amet. Curabitur tincidunt condimentum nulla, auctor varius enim mattis a. Curabitur eget elit nec libero tincidunt tristique. Sed accumsan leo ac nibh congue tempus. </p>
+		<h1>Lyrics in Popular Songs in the English Language.</h1>
+		<p> Analyzing lyrics in the top 100 Billboard songs and their prevalence in the top x00 used words in the English language. </p>
 	</div>
-
+	<svg id="zero" width='1200' height='670'></svg>
 	<svg id="one" width='800' height='470'></svg>
 	<svg id="two" width='800' height='470'></svg>
 	<script>
@@ -108,7 +109,7 @@ p{
 		svg.append("path")
     	.datum(data) 
     	.attr("class", "line") 
-    	.attr("stroke","orange")
+    	.attr("stroke","#11CBD7")
     	.attr("stroke-width",5) 
     	.attr("fill","none")
     	.attr("d", MarriageLineGenerator);  
@@ -116,7 +117,7 @@ p{
     	svg.append("path")
     	.datum(data) 
     	.attr("class", "line") 
-    	.attr("stroke","red")
+    	.attr("stroke","#FA4659")
     	.attr("stroke-width",5) 
     	.attr("fill","none")
     	.attr("d", DivorceLineGenerator); 
