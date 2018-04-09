@@ -27,13 +27,28 @@ h1{
   
 }
 
-#zero, #one, #two{
-margin:1em;
-  padding: 1em;
-  border: solid 1px;
-  display: block;
-  margin:auto;
-  background-color:#F0FFF3;
+.center{
+	margin: 0 auto;
+    width:1300px;
+}
+
+#one, #main{
+
+ 	padding: 1em;
+ 	border: solid 1px;
+ 	display: inline-block;
+ 	margin: 0 auto;
+     width: ;
+ 	background-color:black;
+}
+
+#info,#two{
+
+ 	padding: 1em;
+ 	border: solid 1px;
+ 	
+ 	
+ 	background-color:black;
 }
 </style>
 </head>
@@ -42,9 +57,14 @@ margin:1em;
 		<h1>Lyrics in Popular Songs in the English Language.</h1>
 		<p> Analyzing lyrics in the top 100 Billboard songs and their prevalence in the top x00 used words in the English language. </p>
 	</div>
-	<svg id="zero" width='1200' height='670'></svg>
+	<div class="center">
+		<svg id="main" width='900' height='670'></svg>
+		<svg id="info" width='290' height='670'></svg>
+	</div>
+	<div class="center">
 	<svg id="one" width='800' height='470'></svg>
-	<svg id="two" width='800' height='470'></svg>
+	<svg id="two" width='390' height='470'></svg>
+	</div>
 	<script>
 
 	d3.csv("words.csv", function(data) {
@@ -100,7 +120,6 @@ margin:1em;
     	.curve(d3.curveMonotoneX) 
 
 		var svg = d3.select("#one");
-		
 
 		svg.append("g")
     	.attr("class", "y axis")
