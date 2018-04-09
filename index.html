@@ -32,7 +32,7 @@ h1{
     width:1300px;
 }
 
-#one, #main{
+#marriage, #main{
 
  	padding: 1em;
  	border: solid 1px;
@@ -46,8 +46,6 @@ h1{
 
  	padding: 1em;
  	border: solid 1px;
- 	
- 	
  	background-color:black;
 }
 </style>
@@ -62,7 +60,7 @@ h1{
 		<svg id="info" width='290' height='670'></svg>
 	</div>
 	<div class="center">
-	<svg id="one" width='800' height='470'></svg>
+	<svg id="marriage" width='800' height='470'></svg>
 	<svg id="two" width='390' height='470'></svg>
 	</div>
 	<script>
@@ -72,24 +70,136 @@ h1{
 			d.year = +d.year;
 		});
 		console.log(data[0]);
-		var svg = d3.select("#one");
+		var svg = d3.select("#marriage");
 		var xScale = d3.scaleLinear()
 		.domain([1960, 2014])
 		.range([30, 790]); 
+
+		var color = ["#9B30FF","#3399ff","#00ff7f","#ffff66","#ffa700","#ff6666"];
+
+		var decade = ["sixty","seventy","eighty","ninety","thousands","tens"];
+
+		var rects = ["first","second","third","fourth","fifth","sixth"];
 
 		var count = 0;
 		for (var i = 0; i < data.length; i++){
 			count = i%10;
 			svg.append("text")
 				.attr("text-anchor","middle")
-					.attr("x",10+xScale(data[i].year))
-					.attr("y",30 + 40*count)
-					.attr("font-size",30)
-					.text(data[i].word);
+				.attr("x",10+xScale(data[i].year))
+				.attr("y",30 + 40*count)
+				.attr("font-size",30)
+				.attr("fill",color[Math.floor(i/10)])
+				.attr("class",decade[Math.floor(i/10)])
+				.attr("fill-opacity",0.2)
+				.text(data[i].word);
+				//.attr("fill-opacity",(1 - (30 + 40*count) / (30 + 40*9) * .85 + .15))
 		}
-			
+
+		for(i = 0; i < 6; i++){
+			svg.append("rect").attr("width", 800/6)
+			.attr("height", 470)
+			.attr("opacity",0)
+			.attr("class",rects[i])
+			.attr("x", 10+xScale(1960 + (i*10))-(400/6))
+			.attr("y", 0);
+		}
+
+		var first = Array.from(document.querySelectorAll('svg .first'));
+		var second = Array.from(document.querySelectorAll('svg .second'));
+		var third = Array.from(document.querySelectorAll('svg .third'));
+		var fourth = Array.from(document.querySelectorAll('svg .fourth'));
+		var fifth = Array.from(document.querySelectorAll('svg .fifth'));
+		var sixth = Array.from(document.querySelectorAll('svg .sixth'));
+
 		
 
+		first.forEach(function(el){
+			//console.log(el);
+			el.addEventListener("mouseover", change60s);
+			el.addEventListener("mouseout", StopChange60s);
+		})
+
+		function change60s(e){
+  			d3.selectAll(".sixty").attr("fill-opacity",1);
+		}
+
+		function StopChange60s(e){
+  			d3.selectAll(".sixty").attr("fill-opacity",.2);
+		}
+
+		second.forEach(function(el){
+			//console.log(el);
+			el.addEventListener("mouseover", change70s);
+			el.addEventListener("mouseout", StopChange70s);
+		})
+
+		function change70s(e){
+  			d3.selectAll(".seventy").attr("fill-opacity",1);
+  			
+		}
+
+		function StopChange70s(e){
+  			d3.selectAll(".seventy").attr("fill-opacity",.2);
+		}
+
+		third.forEach(function(el){
+			//console.log(el);
+			el.addEventListener("mouseover", change80s);
+			el.addEventListener("mouseout", StopChange80s);
+		})
+
+		function change80s(e){
+  			d3.selectAll(".eighty").attr("fill-opacity",1);
+
+		}
+
+		function StopChange80s(e){
+  			d3.selectAll(".eighty").attr("fill-opacity",.2);
+		}
+
+		fourth.forEach(function(el){
+			//console.log(el);
+			el.addEventListener("mouseover", change90s);
+			el.addEventListener("mouseout", StopChange90s);
+		})
+
+		function change90s(e){
+  			d3.selectAll(".ninety").attr("fill-opacity",1);
+		}
+
+		function StopChange90s(e){
+  			d3.selectAll(".ninety").attr("fill-opacity",.2);
+		}
+
+		fifth.forEach(function(el){
+			//console.log(el);
+			el.addEventListener("mouseover", change00s);
+			el.addEventListener("mouseout", StopChange00s);
+		})
+
+		function change00s(e){
+  			d3.selectAll(".thousands").attr("fill-opacity",1);
+		}
+
+		function StopChange00s(e){
+  			d3.selectAll(".thousands").attr("fill-opacity",.2);
+		}
+
+		sixth.forEach(function(el){
+			//console.log(el);
+			el.addEventListener("mouseover", change10s);
+			el.addEventListener("mouseout", StopChange10s);
+		})
+
+		function change10s(e){
+  			d3.selectAll(".tens").attr("fill-opacity",1);
+		}
+
+		function StopChange10s(e){
+  			d3.selectAll(".tens").attr("fill-opacity",.2);
+		}
+			
 	});
 
 	d3.csv("us-marriages-divorces-1867-2014.csv", function(data) {
@@ -119,7 +229,7 @@ h1{
     	.y(function(d) { return yScale(d.Divorces_per_1000); })  
     	.curve(d3.curveMonotoneX) 
 
-		var svg = d3.select("#one");
+		var svg = d3.select("#marriage");
 
 		svg.append("g")
     	.attr("class", "y axis")
