@@ -6,6 +6,11 @@
 <style>
 @import
 url('https://fonts.googleapis.com/css?family=Raleway:300,400,700,900');
+
+*{
+    transition: all ease-in-out 550ms;
+}
+
 body{
   background-color: #C6F1E7;
   font-family: 'Raleway', sans-serif;
@@ -18,6 +23,14 @@ h1{
   font-size:5em;
 }
 
+#trendHeading{
+	color:white;
+	text-align:center;
+}
+
+#trend{
+	color:white;
+}
 
 
 #title{
@@ -38,16 +51,36 @@ h1{
  	border: solid 1px;
  	display: inline-block;
  	margin: 0 auto;
-     width: ;
  	background-color:black;
 }
 
-#info,#two{
+#info{
 
  	padding: 1em;
  	border: solid 1px;
  	background-color:black;
 }
+
+#two{
+	display: inline-block;
+	
+	width:460px;
+	height:500px;
+	vertical-align:top;
+}
+
+.yaxis line{
+	stroke:red;
+}
+
+.yaxis path{
+  stroke: red;
+}
+
+.yaxis text{
+  fill: red;
+}  
+
 </style>
 </head>
 <body>
@@ -60,8 +93,12 @@ h1{
 		<svg id="info" width='290' height='670'></svg>
 	</div>
 	<div class="center">
+		
 	<svg id="marriage" width='800' height='470'></svg>
-	<svg id="two" width='390' height='470'></svg>
+	<div id="two">
+		<h3 id = "trendHeading"> trend 0 </h3>
+		<p id = "trend"> explanation 0</p>
+	</div>
 	</div>
 	<script>
 
@@ -122,6 +159,9 @@ h1{
 
 		function change60s(e){
   			d3.selectAll(".sixty").attr("fill-opacity",1);
+  			document.body.style.backgroundColor = color[0];
+  			trendHeading.innerText = "trend 1";
+  			trend.innerText = "explanation 1";
 		}
 
 		function StopChange60s(e){
@@ -136,7 +176,9 @@ h1{
 
 		function change70s(e){
   			d3.selectAll(".seventy").attr("fill-opacity",1);
-  			
+  			document.body.style.backgroundColor = color[1];
+  			trendHeading.innerText = "trend 2";
+  			trend.innerText = "explanation 2";
 		}
 
 		function StopChange70s(e){
@@ -151,6 +193,9 @@ h1{
 
 		function change80s(e){
   			d3.selectAll(".eighty").attr("fill-opacity",1);
+  			document.body.style.backgroundColor = color[2];
+  			trendHeading.innerText = "trend 3";
+  			trend.innerText = "explanation 3";
 
 		}
 
@@ -166,6 +211,9 @@ h1{
 
 		function change90s(e){
   			d3.selectAll(".ninety").attr("fill-opacity",1);
+  			document.body.style.backgroundColor = color[3];
+  			trendHeading.innerText = "trend 4";
+  			trend.innerText = "explanation 4";
 		}
 
 		function StopChange90s(e){
@@ -180,6 +228,9 @@ h1{
 
 		function change00s(e){
   			d3.selectAll(".thousands").attr("fill-opacity",1);
+  			document.body.style.backgroundColor = color[4];
+  			trendHeading.innerText = "trend 5";
+  			trend.innerText = "explanation 5";
 		}
 
 		function StopChange00s(e){
@@ -194,6 +245,9 @@ h1{
 
 		function change10s(e){
   			d3.selectAll(".tens").attr("fill-opacity",1);
+  			document.body.style.backgroundColor = color[5];
+  			trendHeading.innerText = "trend 6";
+  			trend.innerText = "explanation 6";
 		}
 
 		function StopChange10s(e){
@@ -232,8 +286,12 @@ h1{
 		var svg = d3.select("#marriage");
 
 		svg.append("g")
-    	.attr("class", "y axis")
+    	.attr("class", "yaxis")
     	.call(d3.axisLeft(yScale)); 
+
+    	svg.append("g")
+      .attr("class","yaxis")
+      .call(d3.axisBottom(xScale));
 
 		svg.append("path")
     	.datum(data) 
