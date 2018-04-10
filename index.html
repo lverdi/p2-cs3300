@@ -19,7 +19,7 @@ body{
 h1{
   display: inline-block;
   vertical-align: middle;
-  
+
   font-size:5em;
 }
 
@@ -37,7 +37,7 @@ h1{
   width: 80%;
   height: auto;
   margin: auto;
-  
+
 }
 
 .center{
@@ -63,7 +63,7 @@ h1{
 
 #two{
 	display: inline-block;
-	
+
 	width:460px;
 	height:500px;
 	vertical-align:top;
@@ -79,21 +79,21 @@ h1{
 
 .yaxis text{
   fill: red;
-}  
+}
 
 </style>
 </head>
 <body>
 	<div id = "title">
 		<h1>Lyrics in Popular Songs in the English Language.</h1>
-		<p> Analyzing lyrics in the top 100 Billboard songs and their prevalence in the top x00 used words in the English language. </p>
+		<p> Analyzing lyrics in the top 100 Billboard songs and their prevalence in the top words of the English language. </p>
 	</div>
 	<div class="center">
-		<svg id="main" width='900' height='670'></svg>
+		<svg id="main" width='1200' height='670'></svg>
 		<svg id="info" width='290' height='670'></svg>
 	</div>
 	<div class="center">
-		
+
 	<svg id="marriage" width='800' height='470'></svg>
 	<div id="two">
 		<h3 id = "trendHeading"> trend 0 </h3>
@@ -101,6 +101,37 @@ h1{
 	</div>
 	</div>
 	<script>
+
+
+  function parseLine (line) {
+    return {
+      Rank: Number(line["Rank"]),
+      Title: line["Song"],
+      Artist: line["Artist"],
+      Year: Number(line["Year"]),
+      Lyrics: line["Lyrics"]
+    };
+  }
+  d3.csv("billboard_lyrics_2016-2017.csv", parseLine, function (error, data) {
+
+    rawData = data;
+
+    nestedData = d3.nest()
+    .key(function (d) { return d.Year; })
+    .entries(data);
+    
+    // countryData.forEach(function (country) {
+    //   svg.append("circle")
+    //   .attr("cx", popScale(country.Population))
+    //   .attr("cy", gdpScale(country.GDP))
+    //   .attr("r", areaScale(country.Area))
+    //   .style("opacity", 0.3)
+    //   .style("fill", internetScale(country.Internet))
+    //   .on("mouseover", function () {
+    //     svg.select("#CountryName").text(country.Country);
+    //   });
+    // });
+  });
 
 	d3.csv("words.csv", function(data) {
 		data.forEach(function(d) {
@@ -110,7 +141,7 @@ h1{
 		var svg = d3.select("#marriage");
 		var xScale = d3.scaleLinear()
 		.domain([1960, 2014])
-		.range([30, 790]); 
+		.range([30, 790]);
 
 		var color = ["#9B30FF","#3399ff","#00ff7f","#ffff66","#ffa700","#ff6666"];
 
@@ -124,7 +155,7 @@ h1{
 			svg.append("text")
 				.attr("text-anchor","middle")
 				.attr("x",10+xScale(data[i].year))
-				.attr("y",30 + 40*count)
+				.attr("y",80 + 40*count)
 				.attr("font-size",30)
 				.attr("fill",color[Math.floor(i/10)])
 				.attr("class",decade[Math.floor(i/10)])
@@ -149,7 +180,7 @@ h1{
 		var fifth = Array.from(document.querySelectorAll('svg .fifth'));
 		var sixth = Array.from(document.querySelectorAll('svg .sixth'));
 
-		
+
 
 		first.forEach(function(el){
 			//console.log(el);
@@ -253,7 +284,7 @@ h1{
 		function StopChange10s(e){
   			d3.selectAll(".tens").attr("fill-opacity",.2);
 		}
-			
+
 	});
 
 	d3.csv("us-marriages-divorces-1867-2014.csv", function(data) {
@@ -261,53 +292,53 @@ h1{
     	d.Year = +d.Year;
     	d.Marriages_per_1000 = +d.Marriages_per_1000;
     	d.Divorces_per_1000 = +d.Divorces_per_1000;
-    	
+
   		});
   		console.log(data[0]);
 
   		var xScale = d3.scaleLinear()
 		.domain([1960, 2014])
-		.range([30, 790]); 
+		.range([30, 790]);
 
 		var yScale = d3.scaleLinear()
 		.domain([0.0, 17.0])
 		.range([470.0, 30.0]);
 
 		var MarriageLineGenerator = d3.line()
-    	.x(function(d) { return xScale(d.Year); }) 
-    	.y(function(d) { return yScale(d.Marriages_per_1000); }) 
-    	.curve(d3.curveMonotoneX) 
+    	.x(function(d) { return xScale(d.Year); })
+    	.y(function(d) { return yScale(d.Marriages_per_1000); })
+    	.curve(d3.curveMonotoneX)
 
     	var DivorceLineGenerator = d3.line()
-    	.x(function(d) { return xScale(d.Year); }) 
-    	.y(function(d) { return yScale(d.Divorces_per_1000); })  
-    	.curve(d3.curveMonotoneX) 
+    	.x(function(d) { return xScale(d.Year); })
+    	.y(function(d) { return yScale(d.Divorces_per_1000); })
+    	.curve(d3.curveMonotoneX)
 
 		var svg = d3.select("#marriage");
 
 		svg.append("g")
     	.attr("class", "yaxis")
-    	.call(d3.axisLeft(yScale)); 
+    	.call(d3.axisLeft(yScale));
 
-    	svg.append("g")
-      .attr("class","yaxis")
-      .call(d3.axisBottom(xScale));
+  	svg.append("g")
+    .attr("class","yaxis")
+    .call(d3.axisBottom(xScale));
 
 		svg.append("path")
-    	.datum(data) 
-    	.attr("class", "line") 
+    	.datum(data)
+    	.attr("class", "line")
     	.attr("stroke","#11CBD7")
-    	.attr("stroke-width",5) 
+    	.attr("stroke-width",5)
     	.attr("fill","none")
-    	.attr("d", MarriageLineGenerator);  
+    	.attr("d", MarriageLineGenerator);
 
     	svg.append("path")
-    	.datum(data) 
-    	.attr("class", "line") 
+    	.datum(data)
+    	.attr("class", "line")
     	.attr("stroke","#FA4659")
-    	.attr("stroke-width",5) 
+    	.attr("stroke-width",5)
     	.attr("fill","none")
-    	.attr("d", DivorceLineGenerator); 
+    	.attr("d", DivorceLineGenerator);
 	});
 
 	</script>
