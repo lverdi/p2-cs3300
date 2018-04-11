@@ -40,11 +40,6 @@ h1{
 
 }
 
-.center{
-	margin: 0 auto;
-    width:1300px;
-}
-
 #marriage, #main{
 
  	padding: 1em;
@@ -52,6 +47,11 @@ h1{
  	display: inline-block;
  	margin: 0 auto;
  	background-color:black;
+}
+
+#main {
+  background-color: rgb(255, 255, 255, 0.5);
+  border: none;
 }
 
 #info{
@@ -81,63 +81,252 @@ h1{
   fill: red;
 }
 
+.mainAxis {
+  font-size: 13px;
+}
+
 </style>
 </head>
 <body>
-	<div id = "title">
+	<div id="title" align="center">
 		<h1>Lyrics in Popular Songs in the English Language.</h1>
 		<p> Analyzing lyrics in the top 100 Billboard songs and their prevalence in the top words of the English language. </p>
 	</div>
-	<div class="center">
-		<svg id="main" width='1200' height='670'></svg>
-		<svg id="info" width='290' height='670'></svg>
+	<div class="center" align="center">
+		<svg id="main" width='90%' height='800' align="center"></svg>
 	</div>
-	<div class="center">
-
-	<svg id="marriage" width='800' height='470'></svg>
-	<div id="two">
-		<h3 id = "trendHeading"> trend 0 </h3>
-		<p id = "trend"> explanation 0</p>
-	</div>
+	<div class="center" align="center">
+	   <svg id="marriage" width='800' height='470'></svg>
+  	<div id="two">
+  		<h3 id = "trendHeading"> trend 0 </h3>
+  		<p id = "trend"> explanation 0</p>
+  	</div>
 	</div>
 	<script>
 
+  function simpleSlider () {
+
+      var width = 100,
+          value = 0.5, /* Domain assumes to be [0 - 1] */
+          event,
+          x = 0,
+          y = 0;
+
+      function slider (selection) {
+
+          //Line to represent the current value
+          var valueLine = selection.append("line")
+              .attr("x1", x)
+              .attr("x2", x + (width * value))
+              .attr("y1", y)
+              .attr("y2", y)
+              .style({stroke: "#51CB3F",
+                      "stroke-linecap": "round",
+                      "stroke-width": 6 });
+
+          //Line to show the remaining value
+          var emptyLine = selection.append("line")
+              .attr("x1", x + (width * value))
+              .attr("x2", x + width)
+              .attr("y1", y)
+              .attr("y2", y)
+              .style({
+                  "stroke": "#ECECEC",
+                  "stroke-linecap": "round",
+                  "stroke-width": 6
+              });
+
+          var drag = d3.drag().on("drag", function() {
+              var newX = d3.mouse(this)[0];
+
+              if (newX < x)
+                  newX = x;
+              else if (newX > x + width)
+                  newX = x + width;
+
+              value = (newX - x) / width;
+              valueCircle.attr("cx", newX);
+              valueLine.attr("x2", x + (width * value));
+              emptyLine.attr("x1", x + (width * value));
+
+              if (event)
+                  event();
+
+              // d3.event.sourceEvent.stopPropagation();
+          })
+
+          //Draggable circle to represent the current value
+          var valueCircle = selection.append("circle")
+              .attr("cx", x + (width * value))
+              .attr("cy", y)
+              .attr("r", 8)
+              .style({
+                  "stroke": "black",
+                  "stroke-width": 1.0,
+                  "fill": "white"
+              })
+              .call(drag);
+      }
+
+      slider.x = function (val) { x = val; return slider; }
+      slider.y = function (val) { y = val; return slider; }
+      slider.value = function (val) {
+          if (val) {
+              value = val;
+              return slider;
+          } else {
+              return value;
+          }
+      }
+      slider.width = function (val) { width = val; return slider; }
+      slider.event = function (val) { event = val;  return slider; }
+      return slider;
+  }
 
   function parseLine (line) {
+    var wordArray = line["Lyrics"].split(" ");
+    var dict = {};
+    wordArray.forEach(function (d)  {
+      if (dict[d] == undefined) {
+        dict[d] = 1;
+      } else {
+        dict[d] = dict[d] + 1;
+      }
+    });
     return {
       Rank: Number(line["Rank"]),
       Title: line["Song"],
       Artist: line["Artist"],
       Year: Number(line["Year"]),
-      Lyrics: line["Lyrics"]
+      Lyrics: dict
     };
   }
-  d3.csv("billboard_lyrics_2016-2017.csv", parseLine, function (error, data) {
+
+  var topWords = [];
+  d3.text("top1000.txt", function(data) {
+    var topWordsPrelim = d3.csvParseRows(data);
+    topWordsPrelim.forEach(function (wordArray) {
+      topWords.push(wordArray[0]);
+    });
+  });
+
+  var graphHeight = document.getElementById("main").clientHeight;
+  var graphWidth = document.getElementById("main").clientWidth;
+  var axisPadding = 50;
+  var currentYear = "2012";
+  var nWords = 1000;
+
+  var mainsvg = d3.select("#main"),
+  g = mainsvg.append("g").attr("transform", "translate(" + 0 + "," + axisPadding  + ")"),
+  slider1 = new simpleSlider();
+  slider1.width(200).x(30).y(200).value(1.0).event(function(){
+        console.log(slider1.value());
+    });
+  // mainsvg.call(slider1);
+
+  mainsvg.append("text")
+  .attr("id", "SongName")
+  .attr("x", 300)
+  .attr("y", 500)
+  .style("font-size", "24pt");
+
+  var xScaleMain = d3.scaleLinear()
+  .domain([1, 100])
+  .range([axisPadding, graphWidth - axisPadding]);
+
+  var yScaleMain = d3.scaleLinear()
+  .domain([0, 1])
+  .range([graphHeight - axisPadding * 2, axisPadding * 2]);
+
+  mainsvg.append("g")
+    .attr("transform", "translate(" + axisPadding / 2  + ", " + 0  + ")")
+    .attr("class", "mainAxis")
+    .call(YAxis);
+
+  mainsvg.append("g")
+  .attr("transform", "translate(0, " + (graphHeight - axisPadding * 2) + ")")
+  .attr("class", "mainAxis")
+  .call(XAxis);
+
+  function XAxis(g) {
+    g.call(d3.axisTop(xScaleMain));
+    g.select(".domain").remove();
+  }
+
+  function YAxis(g) {
+    g.call(d3.axisLeft(yScaleMain));
+    g.select(".domain").remove();
+    g.selectAll(".tick:not(:first-of-type) line")
+    .attr("stroke", "#777")
+    .attr("stroke-dasharray", "3, 8")
+    .attr("x1", graphWidth - axisPadding * 2)
+    .attr("x2", -axisPadding / 2);
+    g.selectAll(".tick text")
+    .attr("x", 4)
+    .attr("dy", -4);
+  }
+
+  function isYear(year) {
+      return year.Year === currentYear;
+  }
+
+  d3.csv("billboard_lyrics_1964-2017.csv", parseLine, function (error, data) {
 
     rawData = data;
 
     nestedData = d3.nest()
     .key(function (d) { return d.Year; })
     .entries(data);
-    
-    // countryData.forEach(function (country) {
-    //   svg.append("circle")
-    //   .attr("cx", popScale(country.Population))
-    //   .attr("cy", gdpScale(country.GDP))
-    //   .attr("r", areaScale(country.Area))
-    //   .style("opacity", 0.3)
-    //   .style("fill", internetScale(country.Internet))
-    //   .on("mouseover", function () {
-    //     svg.select("#CountryName").text(country.Country);
-    //   });
-    // });
+
+    yearData = nestedData.map(function (year) {
+      var result = { Year: year.key, Songs: year.values };
+
+      return result;
+    });
+
+    var topNWords = topWords.slice(0, nWords);
+    var selectedYear = yearData.find(isYear);
+    var yearSongs = selectedYear.Songs;
+    yearSongs.forEach(function(s) {
+      var songLyrics = Object.keys(s.Lyrics);
+      var totalWords = 0;
+      var uniqueWords = songLyrics.length;
+      var uniqueInTop = 0;
+      var totalInTop = 0;
+      songLyrics.forEach(function(word) {
+        totalWords += s.Lyrics[word];
+        if (topNWords.includes(word)) {
+          uniqueInTop++;
+          totalInTop += s.Lyrics[word];
+        }
+      });
+      var uniqueRatio = uniqueInTop / uniqueWords;
+      console.log(totalInTop + " / "+ totalWords);
+      var totalRatio = totalInTop / totalWords;
+      mainsvg.append("circle")
+      .attr("cx", xScaleMain(s.Rank))
+      .attr("cy", yScaleMain(uniqueRatio))
+      .attr("r", 10)
+      .style("opacity", 0.3)
+      .on("mouseover", function () {
+        mainsvg.select("#SongName").text(s.Title);
+      });
+      mainsvg.append("circle")
+      .attr("cx", xScaleMain(s.Rank))
+      .attr("cy", yScaleMain(totalRatio))
+      .attr("r", 10)
+      .style("fill", "purple")
+      .style("opacity", 0.3)
+      .on("mouseover", function () {
+        mainsvg.select("#SongName").text(s.Title);
+      });
+    });
   });
 
 	d3.csv("words.csv", function(data) {
 		data.forEach(function(d) {
 			d.year = +d.year;
 		});
-		console.log(data[0]);
 		var svg = d3.select("#marriage");
 		var xScale = d3.scaleLinear()
 		.domain([1960, 2014])
