@@ -329,21 +329,32 @@ h1{
         "title": s.Title,
         "r": 15
       });
+
+      mainsvg.append("circle")
+      .attr("r", 25)
+      .attr("cx", xScaleMain(s.Rank))
+      .attr("cy", yScaleMain(totalRatio))
+      .style("fill", fillScale(s.Rank))
+      .style("opacity", 0.4)
+      .on("mouseover", function (d) {
+          mainsvg.select("#SongName").text(s.Title);
+      });
+
     });
 
-    circles = mainsvg.selectAll("circle").data(points).enter().append("circle")
+    circles = mainsvg.selectAll("circle").data(wordPoints).enter().append("circle")
     .attr("r", function (d) { return d.r; })
     .style("fill", function (d) { return fillScale(d.rank); })
-    .style("opacity", 0.9)
-    .on("mouseover", function (d) {
-      mainsvg.select("#SongName").text(function (d) {
-        var p = points.find(function (p) { return p.rank === d.rank; });
-        return p.title;
-      });
-    });
+    .style("opacity", 0.9);
+    // .on("mouseover", function (d) {
+    //   mainsvg.select("#SongName").text(function (d) {
+    //     var p = points.find(function (p) { return p.rank === d.rank; });
+    //     return p.title;
+    //   });
+    // });
 
     simulation
-    .nodes(points)
+    .nodes(wordPoints)
     .on("tick", updateDisplay);
   });
 
