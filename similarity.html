@@ -1,0 +1,107 @@
+<html>
+
+<head>
+    <title>PROJECT 2</title>
+    <script src="scripts/d3.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Raleway:300,400,700,900');
+
+        * {
+            transition: all ease-in-out 500ms;
+        }
+
+        body {
+            background-color: #C6F1E7;
+            font-family: 'Raleway', sans-serif;
+        }
+
+        h1 {
+            display: inline-block;
+            vertical-align: middle;
+            font-size: 4em;
+            margin: 0px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            display: inline-block;
+            vertical-align: middle;
+            font-size: 2em;
+            margin: 0px;
+            margin-bottom: 5px;
+        }
+
+        #trend {
+            color: white;
+        }
+
+
+        #title {
+            width: 80%;
+            height: auto;
+            margin: auto;
+
+        }
+
+        .main {
+            margin: auto;
+            text-align: center;
+            width: 1200px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="title">
+        <h1>Song Similarity Index</h1>
+        <p>Compare the lyrical similarity of songs in lyrics.</p>
+    </div>
+    <div class="main" id="main">
+    </div>
+
+
+    <script>
+        var svg_width = 1000;
+        var svg_height = 500;
+
+        var svg = d3.select("#main").append("svg")
+            .attr("width", svg_width)
+            .attr("height", svg_height)
+
+        function parseLine(line) {
+            return {
+                Rank: Number(line["Rank"]),
+                Title: line["Song"],
+                Artist: line["Artist"],
+                Year: Number(line["Year"]),
+                Lyrics: line["Lyrics"]
+            };
+        }
+
+        function getSimilarities(lyrics1, lyrics2) {
+            lyrics1 = lyrics1.split(" ");
+            lyrics2 = lyrics2.split(" ");
+            sharedWords = [];
+            for (word of lyrics1) {
+                console.log(word);
+                if (lyrics2.indexOf(word) != -1) {
+                    sharedWords.push(word);
+                }
+            }
+
+            sharedWords = [...new Set(sharedWords)];
+            return sharedWords;
+        }
+
+        var song_data;
+        d3.csv("billboard_lyrics_2016-2017.csv", parseLine, function(error, data) {
+            song_data = data;
+        });
+
+    </script>
+
+</body>
+
+</html>
