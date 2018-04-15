@@ -85,6 +85,43 @@ h1{
   font-size: 13px;
 }
 
+.slidecontainer {
+    width: 100%;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 94%;
+    height: 25px;
+    background: black;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius:25px;
+    width: 25px;
+    height: 25px;
+    background: #00FF00 ;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    border-radius:25px;
+    width: 25px;
+    height: 25px;
+    background: #00FF00 ;
+    cursor: pointer;
+}
+
 </style>
 </head>
 <body>
@@ -93,9 +130,16 @@ h1{
 		<p> Analyzing lyrics in the top 100 Billboard songs and their prevalence in the top words of the English language. </p>
 	</div>
 	<div class="center" align="center">
+      <h3 id="yearDisplay"> Year: 2016</h3>
+      <div class = "slidercontainter">
+
+        <input class = "slider" id="slider2" type="range" min="0" max="52" value="52"/>
+      </div>
+
 		<svg id="main" width='95%' height='800' align="center"></svg>
 	</div>
 	<div class="center" align="center">
+
 	   <svg id="marriage" width='800' height='470'></svg>
   	<div id="two">
   		<h3 id = "trendHeading"> trend 0 </h3>
@@ -290,7 +334,7 @@ h1{
       return year.Year === currentYear;
   }
 
-  d3.csv("billboard_lyrics_2016-2017.csv", parseLine, function (error, data) {
+  d3.csv("billboard_lyrics_1964-2017.csv", parseLine, function (error, data) {
 
     rawData = data;
 
@@ -383,6 +427,100 @@ h1{
 
   });
 
+  var slider2 = document.getElementById("slider2");
+      slider2.oninput = function () {
+        console.log(2);
+        d3.selectAll("circle").remove();
+        total = parseInt(slider2.value) + 1965;
+        var topNWords = topWords.slice(0, nWords);
+        
+        currentYear = (total).toString();
+        document.getElementById("yearDisplay").innerHTML = "Year: " + currentYear;
+
+
+
+
+    console.log(yearData);
+    var selectedYear = yearData.find(isYear);
+    var yearSongs = selectedYear.Songs;
+    for (var i = 0; i < yearSongs.length; i++) {
+      var s = yearSongs[i];
+      var tierList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      var songLyrics = Object.keys(s.Lyrics);
+      var totalWords = 0;
+      var uniqueWords = songLyrics.length;
+      var uniqueInTop = 0;
+      var totalInTop = 0;
+      for (var j = 0; j < songLyrics.length; j++) {
+        var word = songLyrics[j];
+        totalWords += s.Lyrics[word];
+        var idx = topNWords.indexOf(word);
+        if (idx != -1) {
+          tierList[Math.floor((idx - 1) / 50)] += s.Lyrics[word];
+          uniqueInTop++;
+          totalInTop += s.Lyrics[word];
+        }
+      }
+
+      var uniqueRatio = uniqueInTop / uniqueWords;
+      var totalRatio = totalInTop / totalWords;
+
+      for (var k = 0; k < tierList.length; k++) {
+        if (tierList[k] != 0) {
+          wordPoints.push({
+            "rank": s.Rank,
+            "title": s.Title,
+            "r": rScaleTiers(tierList[k]),
+            "total": totalRatio,
+            "unique": uniqueRatio,
+            "tier": k
+          });
+        }
+      }
+
+      points.push({
+        "rank": s.Rank,
+        "total": totalRatio,
+        "unique": uniqueRatio,
+        "title": s.Title
+      });
+      d3.select("circle").remove();
+
+      mainsvg.append("circle")
+      .attr("r", rScaleTiers(totalInTop + 40))
+      .attr("cx", xScaleMain(s.Rank))
+      .attr("cy", yScaleMain(totalRatio))
+      .style("fill", "black")
+      .style("opacity", 0.2);
+
+    }
+    console.log(3);
+    mainsvg.selectAll("circle").remove();
+    circles = mainsvg.selectAll(".wordTiers").data(wordPoints).enter().append("circle")
+    .attr("r", function (d) { return d.r; })
+    .attr("cx", function (d) { return xScaleMain(d.rank); })
+    .attr("cy", yScaleMain(0.6))
+    .attr("class", "wordTiers")
+    .style("fill", function (d) { return fillScale(d.tier); })
+    .style("opacity", 0.9)
+    .on("mouseover", function (d) {
+      mainsvg.select("#SongName").text(d.title);
+    });
+//d3.selectAll("circle").remove();
+    var simulation = d3.forceSimulation(wordPoints)
+    // .force('center', d3.forceCenter(d => xScaleMain(d.rank), d => yScaleMain(d.total)))
+    .force("x", d3.forceX(d => xScaleMain(d.rank)).strength(1))
+    .force("y", d3.forceY(d => yScaleMain(d.total)).strength(1))
+    .force("collision", d3.forceCollide(d => d.r))
+    .on("tick", updateDisplay);
+
+    for (var i = 0; i < 350; ++i) {
+      simulation.tick();
+    }
+    
+
+};
+
   updateDisplay();
 
   function updateDisplay() {
@@ -391,211 +529,7 @@ h1{
     .attr("cy", function(d) { return d.y; });
    }
 
-	d3.csv("words.csv", function(data) {
-		data.forEach(function(d) {
-			d.year = +d.year;
-		});
-		var svg = d3.select("#marriage");
-		var xScale = d3.scaleLinear()
-		.domain([1960, 2014])
-		.range([30, 790]);
 
-		var color = ["#9B30FF","#3399ff","#00ff7f","#ffff66","#ffa700","#ff6666"];
-
-		var decade = ["sixty","seventy","eighty","ninety","thousands","tens"];
-
-		var rects = ["first","second","third","fourth","fifth","sixth"];
-
-		var count = 0;
-		for (var i = 0; i < data.length; i++){
-			count = i%10;
-			svg.append("text")
-				.attr("text-anchor","middle")
-				.attr("x",10+xScale(data[i].year))
-				.attr("y",80 + 40*count)
-				.attr("font-size",30)
-				.attr("fill",color[Math.floor(i/10)])
-				.attr("class",decade[Math.floor(i/10)])
-				.attr("fill-opacity",0.2)
-				.text(data[i].word);
-				//.attr("fill-opacity",(1 - (30 + 40*count) / (30 + 40*9) * .85 + .15))
-		}
-
-		for(i = 0; i < 6; i++){
-			svg.append("rect").attr("width", 800/6)
-			.attr("height", 470)
-			.attr("opacity",0)
-			.attr("class",rects[i])
-			.attr("x", 10+xScale(1960 + (i*10))-(400/6))
-			.attr("y", 0);
-		}
-
-		var first = Array.from(document.querySelectorAll('svg .first'));
-		var second = Array.from(document.querySelectorAll('svg .second'));
-		var third = Array.from(document.querySelectorAll('svg .third'));
-		var fourth = Array.from(document.querySelectorAll('svg .fourth'));
-		var fifth = Array.from(document.querySelectorAll('svg .fifth'));
-		var sixth = Array.from(document.querySelectorAll('svg .sixth'));
-
-
-
-		first.forEach(function(el){
-			//console.log(el);
-			el.addEventListener("mouseover", change60s);
-			el.addEventListener("mouseout", StopChange60s);
-		})
-
-		function change60s(e){
-  			d3.selectAll(".sixty").attr("fill-opacity",1);
-  			document.body.style.backgroundColor = color[0];
-  			trendHeading.innerText = "trend 1";
-  			trend.innerText = "explanation 1";
-		}
-
-		function StopChange60s(e){
-  			d3.selectAll(".sixty").attr("fill-opacity",.2);
-		}
-
-		second.forEach(function(el){
-			//console.log(el);
-			el.addEventListener("mouseover", change70s);
-			el.addEventListener("mouseout", StopChange70s);
-		})
-
-		function change70s(e){
-  			d3.selectAll(".seventy").attr("fill-opacity",1);
-  			document.body.style.backgroundColor = color[1];
-  			trendHeading.innerText = "trend 2";
-  			trend.innerText = "explanation 2";
-		}
-
-		function StopChange70s(e){
-  			d3.selectAll(".seventy").attr("fill-opacity",.2);
-		}
-
-		third.forEach(function(el){
-			//console.log(el);
-			el.addEventListener("mouseover", change80s);
-			el.addEventListener("mouseout", StopChange80s);
-		})
-
-		function change80s(e){
-  			d3.selectAll(".eighty").attr("fill-opacity",1);
-  			document.body.style.backgroundColor = color[2];
-  			trendHeading.innerText = "trend 3";
-  			trend.innerText = "explanation 3";
-
-		}
-
-		function StopChange80s(e){
-  			d3.selectAll(".eighty").attr("fill-opacity",.2);
-		}
-
-		fourth.forEach(function(el){
-			//console.log(el);
-			el.addEventListener("mouseover", change90s);
-			el.addEventListener("mouseout", StopChange90s);
-		})
-
-		function change90s(e){
-  			d3.selectAll(".ninety").attr("fill-opacity",1);
-  			document.body.style.backgroundColor = color[3];
-  			trendHeading.innerText = "trend 4";
-  			trend.innerText = "explanation 4";
-		}
-
-		function StopChange90s(e){
-  			d3.selectAll(".ninety").attr("fill-opacity",.2);
-		}
-
-		fifth.forEach(function(el){
-			//console.log(el);
-			el.addEventListener("mouseover", change00s);
-			el.addEventListener("mouseout", StopChange00s);
-		})
-
-		function change00s(e){
-  			d3.selectAll(".thousands").attr("fill-opacity",1);
-  			document.body.style.backgroundColor = color[4];
-  			trendHeading.innerText = "trend 5";
-  			trend.innerText = "explanation 5";
-		}
-
-		function StopChange00s(e){
-  			d3.selectAll(".thousands").attr("fill-opacity",.2);
-		}
-
-		sixth.forEach(function(el){
-			//console.log(el);
-			el.addEventListener("mouseover", change10s);
-			el.addEventListener("mouseout", StopChange10s);
-		})
-
-		function change10s(e){
-  			d3.selectAll(".tens").attr("fill-opacity",1);
-  			document.body.style.backgroundColor = color[5];
-  			trendHeading.innerText = "trend 6";
-  			trend.innerText = "explanation 6";
-		}
-
-		function StopChange10s(e){
-  			d3.selectAll(".tens").attr("fill-opacity",.2);
-		}
-
-	});
-
-	d3.csv("us-marriages-divorces-1867-2014.csv", function(data) {
-  		data.forEach(function(d) {
-    	d.Year = +d.Year;
-    	d.Marriages_per_1000 = +d.Marriages_per_1000;
-    	d.Divorces_per_1000 = +d.Divorces_per_1000;
-
-  		});
-
-  		var xScale = d3.scaleLinear()
-		.domain([1960, 2014])
-		.range([30, 790]);
-
-		var yScale = d3.scaleLinear()
-		.domain([0.0, 17.0])
-		.range([470.0, 30.0]);
-
-		var MarriageLineGenerator = d3.line()
-    	.x(function(d) { return xScale(d.Year); })
-    	.y(function(d) { return yScale(d.Marriages_per_1000); })
-    	.curve(d3.curveMonotoneX)
-
-    	var DivorceLineGenerator = d3.line()
-    	.x(function(d) { return xScale(d.Year); })
-    	.y(function(d) { return yScale(d.Divorces_per_1000); })
-    	.curve(d3.curveMonotoneX)
-
-		var svg = d3.select("#marriage");
-
-		svg.append("g")
-    	.attr("class", "yaxis")
-    	.call(d3.axisLeft(yScale));
-
-  	svg.append("g")
-    .attr("class","yaxis")
-    .call(d3.axisBottom(xScale));
-
-		svg.append("path")
-    	.datum(data)
-    	.attr("class", "line")
-    	.attr("stroke","#11CBD7")
-    	.attr("stroke-width",5)
-    	.attr("fill","none")
-    	.attr("d", MarriageLineGenerator);
-
-    	svg.append("path")
-    	.datum(data)
-    	.attr("class", "line")
-    	.attr("stroke","#FA4659")
-    	.attr("stroke-width",5)
-    	.attr("fill","none")
-    	.attr("d", DivorceLineGenerator);
-	});
 
 	</script>
 
