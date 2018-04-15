@@ -422,7 +422,7 @@ h1{
   });
 
   var slider2 = document.getElementById("slider2");
-      slider2.oninput = function () {
+      slider2.onchange = function () {
         wordPoints = [];
       points = [];
         console.log(2);
@@ -503,7 +503,7 @@ h1{
       mainsvg.select("#SongName").text(d.title);
     });
 
-    /*var simulation = d3.forceSimulation(wordPoints)
+    var simulation = d3.forceSimulation(wordPoints)
     // .force('center', d3.forceCenter(d => xScaleMain(d.rank), d => yScaleMain(d.total)))
     .force("x", d3.forceX(d => xScaleMain(d.rank)).strength(1))
     .force("y", d3.forceY(d => yScaleMain(d.total)).strength(1))
@@ -512,7 +512,7 @@ h1{
 
     for (var i = 0; i < 350; ++i) {
       simulation.tick();
-    }*/
+    }
     
 
 };
