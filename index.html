@@ -429,6 +429,8 @@ h1{
 
   var slider2 = document.getElementById("slider2");
       slider2.oninput = function () {
+        wordPoints = [];
+      points = [];
         console.log(2);
         d3.selectAll("circle").remove();
         total = parseInt(slider2.value) + 1965;
@@ -436,7 +438,6 @@ h1{
         
         currentYear = (total).toString();
         document.getElementById("yearDisplay").innerHTML = "Year: " + currentYear;
-
 
 
 
@@ -465,6 +466,7 @@ h1{
       var uniqueRatio = uniqueInTop / uniqueWords;
       var totalRatio = totalInTop / totalWords;
 
+      
       for (var k = 0; k < tierList.length; k++) {
         if (tierList[k] != 0) {
           wordPoints.push({
@@ -484,7 +486,7 @@ h1{
         "unique": uniqueRatio,
         "title": s.Title
       });
-      d3.select("circle").remove();
+  
 
       mainsvg.append("circle")
       .attr("r", rScaleTiers(totalInTop + 40))
@@ -494,8 +496,8 @@ h1{
       .style("opacity", 0.2);
 
     }
-    console.log(3);
-    mainsvg.selectAll("circle").remove();
+    
+    
     circles = mainsvg.selectAll(".wordTiers").data(wordPoints).enter().append("circle")
     .attr("r", function (d) { return d.r; })
     .attr("cx", function (d) { return xScaleMain(d.rank); })
@@ -506,8 +508,10 @@ h1{
     .on("mouseover", function (d) {
       mainsvg.select("#SongName").text(d.title);
     });
-//d3.selectAll("circle").remove();
-    var simulation = d3.forceSimulation(wordPoints)
+    //mainsvg.selectAll("circle").remove();
+    console.log("also called");
+//d3.select("body").selectAll(".wordTiers").remove();
+    /*var simulation = d3.forceSimulation(wordPoints)
     // .force('center', d3.forceCenter(d => xScaleMain(d.rank), d => yScaleMain(d.total)))
     .force("x", d3.forceX(d => xScaleMain(d.rank)).strength(1))
     .force("y", d3.forceY(d => yScaleMain(d.total)).strength(1))
@@ -516,7 +520,7 @@ h1{
 
     for (var i = 0; i < 350; ++i) {
       simulation.tick();
-    }
+    }*/
     
 
 };
