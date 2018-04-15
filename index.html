@@ -93,7 +93,7 @@ h1{
 		<p> Analyzing lyrics in the top 100 Billboard songs and their prevalence in the top words of the English language. </p>
 	</div>
 	<div class="center" align="center">
-		<svg id="main" width='90%' height='800' align="center"></svg>
+		<svg id="main" width='95%' height='800' align="center"></svg>
 	</div>
 	<div class="center" align="center">
 	   <svg id="marriage" width='800' height='470'></svg>
@@ -242,7 +242,7 @@ h1{
 
   var rScaleTiers = d3.scaleLinear()
   .domain([1, 70])
-  .range([3, 9]);
+  .range([3, 8]);
 
   var rankFillScale = d3.scaleLinear().domain([1, 20, 40, 60, 80, 100]).range(["#9B30FF","#3399ff","#00ff7f","#ffff66","#ffa700","#ff6666"]);
   var fillScale = d3.scaleLinear().domain([0, 2, 4, 6, 8, 9]).range(["#FF1A1A", "#ffa700", "#ffff66", "#00ff7f", "#3399ff", "#9B30FF"]);
@@ -299,7 +299,6 @@ h1{
     var yearSongs = selectedYear.Songs;
     for (var i = 0; i < yearSongs.length; i++) {
       var s = yearSongs[i];
-      console.log(s);
       var tierList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       var songLyrics = Object.keys(s.Lyrics);
       var totalWords = 0;
@@ -340,16 +339,19 @@ h1{
         "title": s.Title
       });
 
-      // mainsvg.append("circle")
-      // .attr("r", 25)
-      // .attr("cx", xScaleMain(s.Rank))
-      // .attr("cy", yScaleMain(totalRatio))
-      // .style("fill", rankFillScale(s.Rank))
-      // .style("opacity", 0.4);
+      mainsvg.append("circle")
+      .attr("r", rScaleTiers(totalInTop))
+      .attr("cx", xScaleMain(s.Rank))
+      .attr("cy", yScaleMain(totalRatio))
+      .style("fill", "black")
+      .style("opacity", 0.2);
 
     }
-    circles = mainsvg.selectAll("circle").data(wordPoints).enter().append("circle")
+    circles = mainsvg.selectAll(".wordTiers").data(wordPoints).enter().append("circle")
     .attr("r", function (d) { return d.r; })
+    .attr("cx", function (d) { return xScaleMain(d.rank); })
+    .attr("cy", yScaleMain(0.6))
+    .attr("class", "wordTiers")
     .style("fill", function (d) { return fillScale(d.tier); })
     .style("opacity", 0.9)
     .on("mouseover", function (d) {
@@ -357,16 +359,15 @@ h1{
     });
 
     var simulation = d3.forceSimulation(wordPoints)
+    // .force('center', d3.forceCenter(d => xScaleMain(d.rank), d => yScaleMain(d.total)))
     .force("x", d3.forceX(d => xScaleMain(d.rank)).strength(1))
     .force("y", d3.forceY(d => yScaleMain(d.total)).strength(1))
     .force("collision", d3.forceCollide(d => d.r));
 
-    // for (var i = 0; i < 120; ++i) simulation.tick();
-
-
     simulation
-    .nodes(wordPoints)
     .on("tick", updateDisplay);
+
+    for (var i = 0; i < 120; ++i) simulation.tick();
   });
 
   updateDisplay();
@@ -375,7 +376,7 @@ h1{
     circles
     .attr("cx", function(d) { return d.x; })
     .attr("cy", function(d) { return d.y; });
-  }
+   }
 
 	d3.csv("words.csv", function(data) {
 		data.forEach(function(d) {
