@@ -153,7 +153,7 @@ h1{
                   event();
 
               d3.event.sourceEvent.stopPropagation();
-          })
+          });
 
           //Draggable circle to represent the current value
           var valueCircle = selection.append("circle")
@@ -186,13 +186,13 @@ h1{
   function parseLine (line) {
     var wordArray = line["Lyrics"].split(" ");
     var dict = {};
-    wordArray.forEach(function (d)  {
-      if (dict[d] == undefined) {
-        dict[d] = 1;
+    for (var i = 0; i < wordArray.length; i++) {
+      if (dict[wordArray[i]] == undefined) {
+        dict[wordArray[i]] = 1;
       } else {
-        dict[d] = dict[d] + 1;
+        dict[wordArray[i]] = dict[wordArray[i]] + 1;
       }
-    });
+    }
     return {
       Rank: Number(line["Rank"]),
       Title: line["Song"],
@@ -205,16 +205,16 @@ h1{
   var topWords = [];
   d3.text("top1000.txt", function(data) {
     var topWordsPrelim = d3.csvParseRows(data);
-    topWordsPrelim.forEach(function (wordArray) {
-      topWords.push(wordArray[0]);
-    });
+    for (var i = 0; i < topWordsPrelim.length; i++) {
+      topWords.push(topWordsPrelim[i][0]);
+    }
   });
 
   var graphHeight = document.getElementById("main").clientHeight;
   var graphWidth = document.getElementById("main").clientWidth;
-  var axisPadding = 50;
+  var axisPadding = 40;
   var currentYear = "2016";
-  var nWords = 1000;
+  var nWords = 500;
   var points = [];
   var wordPoints = [];
   var circles;
@@ -237,10 +237,16 @@ h1{
   .range([axisPadding, graphWidth - axisPadding]);
 
   var yScaleMain = d3.scaleLinear()
-  .domain([0, 1])
+  .domain([0.3, 0.9])
   .range([graphHeight - axisPadding * 2, axisPadding * 2]);
 
-  var fillScale = d3.scaleLinear().domain([1, 20, 40, 60, 80, 100]).range(["#9B30FF","#3399ff","#00ff7f","#ffff66","#ffa700","#ff6666"])
+  var rScaleTiers = d3.scaleLinear()
+  .domain([1, 70])
+  .range([3, 9]);
+
+  var rankFillScale = d3.scaleLinear().domain([1, 20, 40, 60, 80, 100]).range(["#9B30FF","#3399ff","#00ff7f","#ffff66","#ffa700","#ff6666"]);
+  var fillScale = d3.scaleLinear().domain([0, 2, 4, 6, 8, 9]).range(["#FF1A1A", "#ffa700", "#ffff66", "#00ff7f", "#3399ff", "#9B30FF"]);
+
 
   mainsvg.append("g")
     .attr("transform", "translate(" + axisPadding / 2  + ", " + 0  + ")")
@@ -288,70 +294,75 @@ h1{
       return result;
     });
 
-    var simulation = d3.forceSimulation();
-    simulation
-    .force("x", d3.forceX(d => xScaleMain(d.rank)).strength(1))
-    .force("y", d3.forceY(
-        function (d) {
-          var p = points.find(function (p) { return p.rank === d.rank; });
-          return yScaleMain(p.total);
-        }).strength(1))
-    .force("collision", d3.forceCollide(d => d.r));
-
     var topNWords = topWords.slice(0, nWords);
     var selectedYear = yearData.find(isYear);
     var yearSongs = selectedYear.Songs;
-    yearSongs.forEach(function(s) {
+    for (var i = 0; i < yearSongs.length; i++) {
+      var s = yearSongs[i];
+      console.log(s);
+      var tierList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       var songLyrics = Object.keys(s.Lyrics);
       var totalWords = 0;
       var uniqueWords = songLyrics.length;
       var uniqueInTop = 0;
       var totalInTop = 0;
-      songLyrics.forEach(function(word) {
+      for (var j = 0; j < songLyrics.length; j++) {
+        var word = songLyrics[j];
         totalWords += s.Lyrics[word];
-        if (topNWords.includes(word)) {
+        var idx = topNWords.indexOf(word);
+        if (idx != -1) {
+          tierList[Math.floor((idx - 1) / 50)] += s.Lyrics[word];
           uniqueInTop++;
           totalInTop += s.Lyrics[word];
-          wordPoints.push({
-            "rank": s.Rank,
-            "word": word,
-            "r": 3
-          });
         }
-      });
+      }
+
       var uniqueRatio = uniqueInTop / uniqueWords;
       var totalRatio = totalInTop / totalWords;
+
+      for (var k = 0; k < tierList.length; k++) {
+        if (tierList[k] != 0) {
+          wordPoints.push({
+            "rank": s.Rank,
+            "title": s.Title,
+            "r": rScaleTiers(tierList[k]),
+            "total": totalRatio,
+            "unique": uniqueRatio,
+            "tier": k
+          });
+        }
+      }
 
       points.push({
         "rank": s.Rank,
         "total": totalRatio,
         "unique": uniqueRatio,
-        "title": s.Title,
-        "r": 15
+        "title": s.Title
       });
 
-      mainsvg.append("circle")
-      .attr("r", 25)
-      .attr("cx", xScaleMain(s.Rank))
-      .attr("cy", yScaleMain(totalRatio))
-      .style("fill", fillScale(s.Rank))
-      .style("opacity", 0.4)
-      .on("mouseover", function (d) {
-          mainsvg.select("#SongName").text(s.Title);
-      });
+      // mainsvg.append("circle")
+      // .attr("r", 25)
+      // .attr("cx", xScaleMain(s.Rank))
+      // .attr("cy", yScaleMain(totalRatio))
+      // .style("fill", rankFillScale(s.Rank))
+      // .style("opacity", 0.4);
 
-    });
-
+    }
     circles = mainsvg.selectAll("circle").data(wordPoints).enter().append("circle")
     .attr("r", function (d) { return d.r; })
-    .style("fill", function (d) { return fillScale(d.rank); })
-    .style("opacity", 0.9);
-    // .on("mouseover", function (d) {
-    //   mainsvg.select("#SongName").text(function (d) {
-    //     var p = points.find(function (p) { return p.rank === d.rank; });
-    //     return p.title;
-    //   });
-    // });
+    .style("fill", function (d) { return fillScale(d.tier); })
+    .style("opacity", 0.9)
+    .on("mouseover", function (d) {
+      mainsvg.select("#SongName").text(d.title);
+    });
+
+    var simulation = d3.forceSimulation(wordPoints)
+    .force("x", d3.forceX(d => xScaleMain(d.rank)).strength(1))
+    .force("y", d3.forceY(d => yScaleMain(d.total)).strength(1))
+    .force("collision", d3.forceCollide(d => d.r));
+
+    // for (var i = 0; i < 120; ++i) simulation.tick();
+
 
     simulation
     .nodes(wordPoints)
