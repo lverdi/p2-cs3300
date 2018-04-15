@@ -1,0 +1,487 @@
+<html>
+<head>
+<title>PROJECT 2</title>
+<script src="scripts/d3.js"></script>
+
+<style>
+@import
+url('https://fonts.googleapis.com/css?family=Raleway:300,400,700,900');
+
+*{
+    transition: all ease-in-out 550ms;
+}
+
+body{
+  background-color: #C6F1E7;
+  font-family: 'Raleway', sans-serif;
+}
+
+h1{
+  display: inline-block;
+  vertical-align: middle;
+
+  font-size:5em;
+}
+
+#trendHeading{
+  color:white;
+  text-align:center;
+}
+
+#trend{
+  color:white;
+}
+
+
+#title{
+  width: 80%;
+  height: auto;
+  margin: auto;
+
+}
+
+#marriage, #main{
+
+  padding: 1em;
+  border: solid 1px;
+  display: inline-block;
+  margin: 0 auto;
+  background-color:black;
+}
+
+#main {
+  background-color: rgb(255, 255, 255, 0.5);
+  border: none;
+}
+
+#info{
+
+  padding: 1em;
+  border: solid 1px;
+  background-color:black;
+}
+
+#two{
+  display: inline-block;
+
+  width:460px;
+  height:500px;
+  vertical-align:top;
+}
+
+.yaxis line{
+  stroke:red;
+}
+
+.yaxis path{
+  stroke: red;
+}
+
+.yaxis text{
+  fill: red;
+}
+
+.mainAxis {
+  font-size: 13px;
+}
+
+.slidecontainer {
+    width: 100%;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 94%;
+    height: 25px;
+    background: black;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius:25px;
+    width: 25px;
+    height: 25px;
+    background: #00FF00 ;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    border-radius:25px;
+    width: 25px;
+    height: 25px;
+    background: #00FF00 ;
+    cursor: pointer;
+}
+
+</style>
+</head>
+<body>
+  <div id="title" align="center">
+    <h1>Lyrics in Popular Songs in the English Language.</h1>
+    <p> Analyzing lyrics in the top 100 Billboard songs and their prevalence in the top words of the English language. </p>
+  </div>
+  <div class="center" align="center">
+  <h3 id="yearDisplay"> Year: 2016</h3>
+  <div class = "slidercontainter">
+
+    <input class = "slider" id="slider2" type="range" min="0" max="52" value="52"/>
+    </div>
+    <svg id="main" width='90%' height='800' align="center"></svg>
+
+  </div>
+  <div class="center" align="center">
+     
+  </div>
+  <script>
+
+  function simpleSlider () {
+
+      var width = 100,
+          value = 0.5, /* Domain assumes to be [0 - 1] */
+          event,
+          x = 0,
+          y = 0;
+
+      function slider (selection) {
+
+          //Line to represent the current value
+          var valueLine = selection.append("line")
+              .attr("x1", x)
+              .attr("x2", x + (width * value))
+              .attr("y1", y)
+              .attr("y2", y)
+              .style({stroke: "#51CB3F",
+                      "stroke-linecap": "round",
+                      "stroke-width": 6 });
+
+          //Line to show the remaining value
+          var emptyLine = selection.append("line")
+              .attr("x1", x + (width * value))
+              .attr("x2", x + width)
+              .attr("y1", y)
+              .attr("y2", y)
+              .style({
+                  "stroke": "#ECECEC",
+                  "stroke-linecap": "round",
+                  "stroke-width": 6
+              });
+
+          var drag = d3.drag().on("drag", function() {
+              var newX = d3.mouse(this)[0];
+
+              if (newX < x)
+                  newX = x;
+              else if (newX > x + width)
+                  newX = x + width;
+
+              value = (newX - x) / width;
+              valueCircle.attr("cx", newX);
+              valueLine.attr("x2", x + (width * value));
+              emptyLine.attr("x1", x + (width * value));
+
+              if (event)
+                  event();
+
+              d3.event.sourceEvent.stopPropagation();
+          })
+
+          //Draggable circle to represent the current value
+          var valueCircle = selection.append("circle")
+              .attr("cx", x + (width * value))
+              .attr("cy", y)
+              .attr("r", 8)
+              .style({
+                  "stroke": "black",
+                  "stroke-width": 1.0,
+                  "fill": "white"
+              })
+              .call(drag);
+      }
+
+      slider.x = function (val) { x = val; return slider; }
+      slider.y = function (val) { y = val; return slider; }
+      slider.value = function (val) {
+          if (val) {
+              value = val;
+              return slider;
+          } else {
+              return value;
+          }
+      }
+      slider.width = function (val) { width = val; return slider; }
+      slider.event = function (val) { event = val;  return slider; }
+      return slider;
+  }
+
+  function parseLine (line) {
+    var wordArray = line["Lyrics"].split(" ");
+    var dict = {};
+    wordArray.forEach(function (d)  {
+      if (dict[d] == undefined) {
+        dict[d] = 1;
+      } else {
+        dict[d] = dict[d] + 1;
+      }
+    });
+    return {
+      Rank: Number(line["Rank"]),
+      Title: line["Song"],
+      Artist: line["Artist"],
+      Year: Number(line["Year"]),
+      Lyrics: dict
+    };
+  }
+
+  var topWords = [];
+  d3.text("top1000.txt", function(data) {
+    var topWordsPrelim = d3.csvParseRows(data);
+    topWordsPrelim.forEach(function (wordArray) {
+      topWords.push(wordArray[0]);
+    });
+  });
+
+  var graphHeight = document.getElementById("main").clientHeight;
+  var graphWidth = document.getElementById("main").clientWidth;
+  var axisPadding = 50;
+  var currentYear = "2017";
+  var nWords = 1000;
+  var points = [];
+  var wordPoints = [];
+  var circles;
+
+  var mainsvg = d3.select("#main"),
+  g = mainsvg.append("g").attr("transform", "translate(" + 0 + "," + axisPadding  + ")"),
+  slider1 = new simpleSlider();
+  slider1.width(200).x(30).y(200).value(1.0).event(function(){
+    });
+  // mainsvg.call(slider1);
+  
+
+  mainsvg.append("text")
+  .attr("id", "SongName")
+  .attr("x", 300)
+  .attr("y", 500)
+  .style("font-size", "24pt");
+
+  var xScaleMain = d3.scaleLinear()
+  .domain([1, 100])
+  .range([axisPadding, graphWidth - axisPadding]);
+
+  var yScaleMain = d3.scaleLinear()
+  .domain([0, 1])
+  .range([graphHeight - axisPadding * 2, axisPadding * 2]);
+
+  var fillScale = d3.scaleLinear().domain([1, 20, 40, 60, 80, 100]).range(["#9B30FF","#3399ff","#00ff7f","#ffff66","#ffa700","#ff6666"])
+
+  mainsvg.append("g")
+    .attr("transform", "translate(" + axisPadding / 2  + ", " + 0  + ")")
+    .attr("class", "mainAxis")
+    .call(YAxis);
+
+  mainsvg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - 20)
+      .attr("x",0 - (350))
+      .attr("dy", "1.2em")
+      .style("text-anchor", "middle")
+      .text("temp label");
+
+  mainsvg.append("g")
+  .attr("transform", "translate(0, " + (graphHeight - axisPadding * 2) + ")")
+  .attr("class", "mainAxis")
+  .call(XAxis);
+
+  mainsvg.append("text")             
+      .attr("transform",
+            "translate(" + (400) + " ," + 
+                           (750) + ")")
+      .style("text-anchor", "middle")
+      .text("temp label");
+
+  function XAxis(g) {
+    g.call(d3.axisTop(xScaleMain));
+    g.select(".domain").remove();
+  }
+
+  function YAxis(g) {
+    g.call(d3.axisLeft(yScaleMain));
+    g.select(".domain").remove();
+    g.selectAll(".tick:not(:first-of-type) line")
+    .attr("stroke", "#777")
+    .attr("stroke-dasharray", "3, 8")
+    .attr("x1", graphWidth - axisPadding * 2)
+    .attr("x2", -axisPadding / 2);
+    g.selectAll(".tick text")
+    .attr("x", 4)
+    .attr("dy", -4);
+  }
+
+  function isYear(year) {
+      return year.Year === currentYear;
+  }
+
+    
+  d3.csv("billboard_lyrics_1964-2017.csv", parseLine, function (error, data) { 
+
+    rawData = data;
+    nestedData = d3.nest()
+    .key(function (d) { return d.Year; })
+    .entries(data);
+
+
+
+    yearData = nestedData.map(function (year) {
+      var result = { Year: year.key, Songs: year.values };
+
+      return result;
+    });
+
+    var simulation = d3.forceSimulation();
+    simulation
+    .force("x", d3.forceX(d => xScaleMain(d.rank)).strength(1))
+    .force("y", d3.forceY(
+        function (d) {
+          var p = points.find(function (p) { return p.rank === d.rank; });
+          return yScaleMain(p.total);
+        }).strength(1))
+    .force("collision", d3.forceCollide(d => d.r));
+
+
+
+  var topNWords = topWords.slice(0, nWords);
+        
+    var selectedYear = yearData.find(isYear);
+    console.log(yearData);
+    var yearSongs = selectedYear.Songs;
+    yearSongs.forEach(function(s) {
+      var songLyrics = Object.keys(s.Lyrics);
+      var totalWords = 0;
+      var uniqueWords = songLyrics.length;
+      var uniqueInTop = 0;
+      var totalInTop = 0;
+      songLyrics.forEach(function(word) {
+        totalWords += s.Lyrics[word];
+        if (topNWords.includes(word)) {
+          uniqueInTop++;
+          totalInTop += s.Lyrics[word];
+          wordPoints.push({
+            "rank": s.Rank,
+            "word": word,
+            "r": 3
+          });
+        }
+      });
+      var uniqueRatio = uniqueInTop / uniqueWords;
+      var totalRatio = totalInTop / totalWords;
+
+      points.push({
+        "rank": s.Rank,
+        "total": totalRatio,
+        "unique": uniqueRatio,
+        "title": s.Title,
+        "r": 15
+      });
+
+      mainsvg.append("circle")
+      .attr("r", 25)
+      .attr("cx", xScaleMain(s.Rank))
+      .attr("cy", yScaleMain(totalRatio))
+      .style("fill", fillScale(s.Rank))
+      .style("opacity", 0.4)
+      .on("mouseover", function (d) {
+          mainsvg.select("#SongName").text(s.Title);
+      });
+
+    });
+
+    circles = mainsvg.selectAll("circle").data(wordPoints).enter().append("circle")
+    .attr("r", function (d) { return d.r; })
+    .style("fill", function (d) { return fillScale(d.rank); })
+    .style("opacity", 0.9);
+
+
+});
+    /*simulation
+    .nodes(wordPoints)
+    .on("tick", updateDisplay);
+  
+
+   updateDisplay();
+
+  function updateDisplay() {
+    circles
+    .attr("cx", function(d) { return d.x; })
+    .attr("cy", function(d) { return d.y; });
+  }*/
+
+  var slider2 = document.getElementById("slider2");
+      slider2.oninput = function () {
+        d3.selectAll("circle").remove();
+        total = parseInt(slider2.value) + 1965;
+        var topNWords = topWords.slice(0, nWords);
+        
+        currentYear = (total).toString();
+        document.getElementById("yearDisplay").innerHTML = "Year: " + currentYear;
+
+
+
+
+        var selectedYear = yearData.find(isYear);
+        console.log(yearData);
+        var yearSongs = selectedYear.Songs;
+        yearSongs.forEach(function(s) {
+          var songLyrics = Object.keys(s.Lyrics);
+          var totalWords = 0;
+          var uniqueWords = songLyrics.length;
+          var uniqueInTop = 0;
+          var totalInTop = 0;
+          songLyrics.forEach(function(word) {
+            totalWords += s.Lyrics[word];
+            if (topNWords.includes(word)) {
+              uniqueInTop++;
+              totalInTop += s.Lyrics[word];
+              wordPoints.push({
+                "rank": s.Rank,
+                "word": word,
+                "r": 3
+              });
+            }
+          });
+        var uniqueRatio = uniqueInTop / uniqueWords;
+        var totalRatio = totalInTop / totalWords;
+
+        points.push({
+        "rank": s.Rank,
+        "total": totalRatio,
+        "unique": uniqueRatio,
+        "title": s.Title,
+        "r": 15
+        });
+
+        mainsvg.append("circle")
+        .attr("r", 25)
+        .attr("cx", xScaleMain(s.Rank))
+        .attr("cy", yScaleMain(totalRatio))
+        .style("fill", fillScale(s.Rank))
+        .style("opacity", 0.4)
+        .on("mouseover", function (d) {
+        mainsvg.select("#SongName").text(s.Title);
+      });
+
+    });
+
+};
+
+  </script>
+
+</body>
+</html>
