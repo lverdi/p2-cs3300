@@ -2,10 +2,10 @@
 <head>
 <title>PROJECT 2</title>
 <script src="scripts/d3.js"></script>
+<script src="scripts/jquery.js"></script>
 
 <style>
-@import
-url('https://fonts.googleapis.com/css?family=Raleway:300,400,700,900');
+@font-face { font-family: "Raleway"; src: url("fonts/Raleway-Regular.ttf")}
 
 *{
     transition: all ease-in-out 550ms;
@@ -48,7 +48,7 @@ circle {
 #searchBar {
   margin-left: 25%;
   height: 40px;
-  width: 10%;
+  width: 15%;
   background: #AAABB8;
   font-size: 20px;
   font-family: 'Raleway', sans-serif;
@@ -61,6 +61,14 @@ circle {
   border: none;
  	display: inline-block;
  	margin: 0 auto;
+  background-color: #464866;
+}
+
+#info {
+  padding: 1em;
+  border: none;
+ 	display: inline-block;
+ 	margin: 30px auto;
   background-color: #464866;
 }
 
@@ -116,7 +124,8 @@ circle {
 <body>
 	<div id="title" align="center">
 		<h1>Lyrics in Popular Songs in the English Language.</h1>
-		<p> Analyzing lyrics in the top 100 Billboard songs and their prevalence in the top words of the English language. </p>
+		<p> Analyzing lyrics in the top 100 Billboard songs and their prevalence in the top words of the English language. <br>
+        You can move the slider to select top 100 songs from a year, or search for a word to see where it appears in the data.</p>
 	</div>
 	<div class="center" align="center">
     <div class="toolbar">
@@ -128,6 +137,8 @@ circle {
       </div>
 
 		<svg id="main" width='90%' height='750' align="center"></svg>
+    <svg id="info" width='80%' height='600' align="center"></svg>
+
 	</div>
 
 	</div>
@@ -162,24 +173,29 @@ circle {
 
   var graphHeight = document.getElementById("main").clientHeight;
   var graphWidth = document.getElementById("main").clientWidth;
+  var infoHeight = document.getElementById("info").clientHeight;
+  var infoWidth = document.getElementById("info").clientWidth;
   var axisPadding = 40;
   var currentYear = "2017";
   var nWords = 500;
   var points = [];
   var wordPoints = [];
   var circles;
+  var nestedData;
 
   var mainsvg = d3.select("#main"),
   g = mainsvg.append("g").attr("transform", "translate(" + 0 + "," + axisPadding  + ")");
-  // mainsvg.call(slider1);
+  var infosvg = d3.select("#info");
 
   document.getElementById("slider2").style.width = graphWidth;
 
   mainsvg.append("text")
   .attr("id", "SongName")
-  .attr("x", 300)
-  .attr("y", 500)
-  .style("font-size", "24pt");
+  .attr("x", graphWidth / 2)
+  .attr("y", graphHeight / 10)
+  .attr("text-anchor", "middle")
+  .attr("fill", "#AAABB8")
+  .style("font-size", "30pt");
 
   mainsvg.append("text")
   .attr("id", "loading")
@@ -191,6 +207,16 @@ circle {
   .style("opacity", "1")
   .text("Loading...");
 
+  infosvg.append("text")
+  .attr("id", "placeholderInfo")
+  .attr("x", infoWidth / 2)
+  .attr("y", infoHeight / 2)
+  .attr("text-anchor", "middle")
+  .attr("fill", "#AAABB8")
+  .style("font-size", "30pt")
+  .style("opacity", "1")
+  .text("Click on a song to get more details");
+
   var xScaleMain = d3.scaleLinear()
   .domain([1, 100])
   .range([axisPadding, graphWidth - axisPadding]);
@@ -201,9 +227,10 @@ circle {
 
   var rScaleTiers = d3.scaleLinear()
   .domain([1, 70])
-  .range([3.5, 8]);
+  .range([5, 10]);
 
-  var fillScale = d3.scaleLinear().domain([0, 2, 4, 6, 8, 9]).range(["#FEFFFF", "#3399ff", "#4d52d1", "#a647ff", "#FF008B", "#AAABB8"]);
+  var fillScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5]).range(["#FEFFFF", "#090977", "#9f0aad", "#ff269c", "#05b27b", "#f73636"]);
+  var inverseFillScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5]).range(["#090977", "#FEFFFF", "#FEFFFF", "#FEFFFF", "#FEFFFF", "#FEFFFF"]);
 
   mainsvg.append("g")
   .attr("transform", "translate(" + axisPadding / 2  + ", " + 0  + ")")
@@ -267,7 +294,7 @@ circle {
         wordPoints = [];
         points = [];
         d3.selectAll("circle").remove();
-
+        document.getElementById("searchBar").value = "";
         total = parseInt(slider2.value) + 1965;
         currentYear = (total).toString();
         document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
@@ -301,7 +328,7 @@ circle {
                 document.getElementById("song" + s.Rank).style.opacity = 0.8;
                 var idx = topNWords.indexOf(lyric);
                 if (idx != -1) {
-                  var tier = Math.floor(idx / 50);
+                  var tier = Math.floor(idx / 100);
                   document.getElementById("tier" + tier + "-" + s.Rank).style.opacity = 1;
                 }
               }
@@ -322,7 +349,8 @@ circle {
     var yearSongs = selectedYear.Songs;
     for (var i = 0; i < yearSongs.length; i++) {
       var s = yearSongs[i];
-      var tierList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      var tierList = [0, 0, 0, 0, 0, 0];
+      var tierWords = [[], [], [], [], [], []];
       var songLyrics = Object.keys(s.Lyrics);
       var totalWords = 0;
       var uniqueWords = songLyrics.length;
@@ -333,19 +361,24 @@ circle {
         totalWords += s.Lyrics[word];
         var idx = topNWords.indexOf(word);
         if (idx != -1) {
-          tierList[Math.floor(idx / 50)] += s.Lyrics[word];
+          tierList[Math.floor(idx / 100)] += s.Lyrics[word];
+          tierWords[Math.floor(idx / 100)].push(word);
           uniqueInTop++;
           totalInTop += s.Lyrics[word];
+        } else {
+          tierList[5] += s.Lyrics[word];
+          tierWords[5].push(word);
         }
       }
       var uniqueRatio = 100 * uniqueInTop / uniqueWords;
       var totalRatio = 100 * totalInTop / totalWords;
 
-      for (var k = 0; k < tierList.length; k++) {
+      for (var k = 0; k < tierList.length - 1; k++) {
         if (tierList[k] != 0) {
           wordPoints.push({
             "rank": s.Rank,
             "title": s.Title,
+            "artist": s.Artist,
             "r": rScaleTiers(tierList[k]),
             "total": totalRatio,
             "unique": uniqueRatio,
@@ -359,7 +392,10 @@ circle {
         "total": totalRatio,
         "totalInTop": totalInTop,
         "unique": uniqueRatio,
-        "title": s.Title
+        "title": s.Title,
+        "artist": s.Artist,
+        "tiers": tierList,
+        "words": tierWords
       });
     }
 
@@ -388,7 +424,101 @@ circle {
     .style("fill", function (d) { return fillScale(d.tier); })
     .style("opacity", 0.9)
     .on("mouseover", function (d) {
-      mainsvg.select("#SongName").text(titleCase(d.title));
+      mainsvg.select("#SongName").text("#" + d.rank + " " + d.title.toUpperCase() + " - " + capFirstWord(d.artist));
+    });
+
+    $(".wordTiers").click(function(event) {
+      event.preventDefault();
+
+      $("body, html").animate({
+        scrollTop: $("#info").offset().top
+      }, 400, 'linear');
+    });
+
+    circles.on("click", function (d) {
+      d3.selectAll("#info > *").remove();
+      var infosvg = d3.select('#info');
+      var selected = points.find(function (s) {
+          return s.rank === d.rank;
+      });
+      d3.select("#info").style("background-color", "#464866");
+      infosvg.append("text")
+      .attr("text-anchor", "middle")
+      .attr("x", infoWidth / 2)
+      .attr("y", infoHeight / 11)
+      .text("#" + selected.rank + " " + selected.title.toUpperCase() + " - " + capFirstWord(selected.artist))
+      .style("fill", "#AAABB8")
+      .style("font-size", "32px");
+
+      infosvg.append("text")
+      .attr("text-anchor", "middle")
+      .attr("x", infoWidth / 2)
+      .attr("y", infoHeight * 3 / 11)
+      .text("% unique")
+      .style("fill", "#AAABB8")
+      .style("font-size", "28px");
+
+      var radius = infoHeight * 0.25;
+      var donutWidth = radius / 2;
+      var piesvg = d3.select('#info')
+          .append('svg')
+          .attr('width', infoHeight)
+          .attr('height', infoHeight)
+          .append('g')
+          .attr('transform', 'translate(' + infoHeight / 3 +
+            ',' + infoHeight / 2 + ')');
+
+      var arc = d3.arc()
+          .innerRadius(radius - donutWidth)
+          .outerRadius(radius);
+      var pie = d3.pie()
+          .value(function(d) { return d; })
+          .sort(null);
+      var path = piesvg.selectAll('path')
+                .data(pie(selected.tiers))
+                .enter()
+                .append('path')
+                .attr('d', arc)
+                .attr('fill', function(d, i) {
+                  return fillScale(i);
+                })
+                .attr('id', function(d, i) {
+                  return "slice" + i;
+                })
+                .on("mouseover", function (d) {
+                  piesvg.selectAll("path").style("opacity", 0.3);
+                  piesvg.selectAll("#slice" + d.index).style("opacity", 1);
+                })
+                .on("mouseout", function (d) {
+                  piesvg.selectAll("path").style("opacity", 1);
+                })
+                .on("click", function (d) {
+                  d3.selectAll(".wordDetails").remove();
+                  var w = selected.tierWords;
+                  var range = (d.index + 1) * 100;
+                  var text;
+                  if (d.index != 5) {
+                    text = "Top Words #" + (range - 99) + "-" + range;
+                  } else {
+                    text = "Words not in Top 500";
+                  }
+                  piesvg.selectAll("path").style("opacity", 1);
+                  infosvg.append("text")
+                  .attr("text-anchor", "middle")
+                  .attr("class", "wordDetails")
+                  .attr("x", infoWidth * 0.775)
+                  .attr("y", infoHeight * 3 / 11)
+                  .text(text)
+                  .style("fill", fillScale(d.index))
+                  .style("text-decoration", "underline")
+                  .style("font-size", "24px");
+                  if (d.index == 0) {
+                    d3.select("#info").style("background-color", "#c7cccc");
+                  } else {
+                    d3.select("#info").style("background-color", fillScale(d.index));
+                  }
+                  d3.selectAll("#info text").style("fill", inverseFillScale(d.index));
+                });
     });
 
     var simulation = d3.forceSimulation();
@@ -409,9 +539,9 @@ circle {
     mainsvg.selectAll(".mainAxis").style("opacity", "1");
   }
 
-  function titleCase(str) {
-    return str.toLowerCase().split(' ').map(function(word) {
-      return word.replace(word[0], word[0].toUpperCase());
+  function capFirstWord(str) {
+    return str.split(' ').map(function(w) {
+      return w.replace(w[0], w[0].toUpperCase());
     }).join(' ');
   }
 
