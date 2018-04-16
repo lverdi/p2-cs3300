@@ -318,6 +318,7 @@
             total = parseInt(slider2.value) + 1965;
             currentYear = (total).toString();
             document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
+            graphPoints(total);
         };
         slider2.onchange = function() {
             wordPoints = [];
@@ -328,6 +329,7 @@
             currentYear = (total).toString();
             document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
             showPointsForYear();
+            graphPoints(total);
         };
 
         var search = document.getElementById("searchBar");
@@ -778,20 +780,6 @@
 
             return sharedWords;
         }
-
-        var slider2 = document.getElementById("slider2");
-        slider2.oninput = function() {
-            total = parseInt(slider2.value) + 1965;
-            currentYear = (total).toString();
-            document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
-            graphPoints(total);
-        };
-        slider2.onchange = function() {
-            total = parseInt(slider2.value) + 1965;
-            currentYear = (total).toString();
-            document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
-        };
-
 
         var song_data_all; //stores song data
         var overlap_top_all; //stores overlap data; preprocessed in python
