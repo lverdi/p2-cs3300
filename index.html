@@ -138,13 +138,7 @@ h1{
 
 		<svg id="main" width='95%' height='800' align="center"></svg>
 	</div>
-	<div class="center" align="center">
 
-	   <svg id="marriage" width='800' height='470'></svg>
-  	<div id="two">
-  		<h3 id = "trendHeading"> trend 0 </h3>
-  		<p id = "trend"> explanation 0</p>
-  	</div>
 	</div>
 	<script>
 
@@ -346,7 +340,9 @@ h1{
   });
 
   var slider2 = document.getElementById("slider2");
-      slider2.oninput = function () {
+      slider2.onchange = function () {
+        wordPoints = [];
+      points = [];
         console.log(2);
         d3.selectAll("circle").remove();
         total = parseInt(slider2.value) + 1965;
@@ -354,7 +350,6 @@ h1{
 
         currentYear = (total).toString();
         document.getElementById("yearDisplay").innerHTML = "Year: " + currentYear;
-
 
 
 
@@ -383,6 +378,7 @@ h1{
       var uniqueRatio = uniqueInTop / uniqueWords;
       var totalRatio = totalInTop / totalWords;
 
+      
       for (var k = 0; k < tierList.length; k++) {
         if (tierList[k] != 0) {
           wordPoints.push({
@@ -402,7 +398,7 @@ h1{
         "unique": uniqueRatio,
         "title": s.Title
       });
-      d3.select("circle").remove();
+  
 
       mainsvg.append("circle")
       .attr("r", rScaleTiers(totalInTop + 40))
@@ -412,8 +408,8 @@ h1{
       .style("opacity", 0.2);
 
     }
-    console.log(3);
-    mainsvg.selectAll("circle").remove();
+    
+    
     circles = mainsvg.selectAll(".wordTiers").data(wordPoints).enter().append("circle")
     .attr("r", function (d) { return d.r; })
     .attr("cx", function (d) { return xScaleMain(d.rank); })
@@ -424,7 +420,7 @@ h1{
     .on("mouseover", function (d) {
       mainsvg.select("#SongName").text(d.title);
     });
-//d3.selectAll("circle").remove();
+
     var simulation = d3.forceSimulation(wordPoints)
     // .force('center', d3.forceCenter(d => xScaleMain(d.rank), d => yScaleMain(d.total)))
     .force("x", d3.forceX(d => xScaleMain(d.rank)).strength(1))
