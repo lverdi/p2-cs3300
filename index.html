@@ -16,14 +16,11 @@
             src: url("fonts/Roboto-Medium.ttf")
         }
 
-        /*
- * { transition: all ease-in-out 550ms; }
-*/
-
         body {
             background-color: #25274D;
             font-family: 'Raleway', sans-serif;
             color: #AAABB8;
+            transition: all ease-in-out 550ms;
         }
 
         h1 {
@@ -87,6 +84,10 @@
             background-color: #464866;
         }
 
+        #main2, #links, #nodes {
+            transition: none;
+        }
+
         #info {
             padding: 1em;
             border: none;
@@ -126,7 +127,6 @@
 
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
             border-radius: 25px;
             width: 25px;
             height: 25px;
