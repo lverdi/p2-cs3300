@@ -16,18 +16,22 @@
             src: url("fonts/Roboto-Medium.ttf")
         }
 
+
+        * {
+            transition: all ease-in-out 550ms;
+        }
+
+
         body {
             background-color: #25274D;
             font-family: 'Raleway', sans-serif;
             color: #AAABB8;
-            transition: all ease-in-out 550ms;
         }
 
         h1 {
             display: inline-block;
             vertical-align: middle;
-            font-size: 4em;
-            margin: 0px;
+            font-size: 5em;
             margin-bottom: 0.2em;
         }
 
@@ -84,7 +88,7 @@
             background-color: #464866;
         }
 
-        #main2, #links, #nodes {
+        #main2, #links line, #nodes circle {
             transition: none;
         }
 
@@ -383,14 +387,7 @@
             for (var i = 0; i < yearSongs.length; i++) {
                 var s = yearSongs[i];
                 var tierList = [0, 0, 0, 0, 0, 0];
-                var tierWords = [
-                    [],
-                    [],
-                    [],
-                    [],
-                    [],
-                    []
-                ];
+                var tierWords = [ [], [], [], [], [], [] ];
                 var songLyrics = Object.keys(s.Lyrics);
                 var totalWords = 0;
                 var uniqueWords = songLyrics.length;
@@ -431,6 +428,7 @@
                     "rank": s.Rank,
                     "total": totalRatio,
                     "totalInTop": totalInTop,
+                    "wordCount": totalWords,
                     "unique": uniqueRatio,
                     "title": s.Title,
                     "artist": s.Artist,
@@ -505,6 +503,15 @@
                     .text("% unique")
                     .style("fill", "#AAABB8")
                     .style("font-size", "28px");
+
+                printSongInfo(infosvg, "Word Count  ", selected.wordCount, "#38C4FF", 4/12);
+                printSongInfo(infosvg, "Top #1-100  ", selected.tiers[0], "#FEFFFF", 5/12);
+                printSongInfo(infosvg, "Top #101-200  ", selected.tiers[1], "#090977", 6/12);
+                printSongInfo(infosvg, "Top #201-300  ", selected.tiers[2], "#9f0aad", 7/12);
+                printSongInfo(infosvg, "Top #301-400  ", selected.tiers[3], "#ff269c", 8/12);
+                printSongInfo(infosvg, "Top #401-500  ", selected.tiers[4], "#05b27b", 9/12);
+                printSongInfo(infosvg, "Top #500+  ", selected.tiers[5], "#f73636", 10/12);
+
 
                 var radius = infoHeight * 0.25;
                 var donutWidth = radius / 2;
@@ -588,6 +595,21 @@
             mainsvg.select("#loading").style("opacity", "0");
             mainsvg.selectAll(".mainAxis").style("opacity", "1");
         }
+
+        function printSongInfo (svg, str1, str2, color, pos) {
+            svg.append("text")
+            .attr("text-anchor", "start")
+            .attr("x", infoWidth / 3)
+            .attr("y", infoHeight * pos)
+            .text(str1)
+            .style("fill", "#AAABB8")
+            .style("font-size", "22px")
+            .append('tspan')
+            .text(str2)
+            .style("fill", color)
+            .style("font-size", "26px");
+        }
+
 
         function capFirstWord(str) {
             return str.split(' ').map(function(w) {
@@ -908,7 +930,7 @@
                 display.append("text")
                     .attr("x", info_svg_width_start + 3 * display_offset)
                     .attr("y", display_offset * 2)
-                    .text(d.Title)
+                    .text(capFirstWord(d.Title))
                     .attr("text-transform", "capitalize")
                     .attr("font-family", 'Raleway')
                     .attr("font-size", "30px")
@@ -919,7 +941,7 @@
                 display.append("text")
                     .attr("x", info_svg_width_start + 3 * display_offset)
                     .attr("y", display_offset * 3)
-                    .text(d.Artist)
+                    .text(capFirstWord(d.Artist))
                     .attr("text-transform", "capitalize")
                     .attr("font-family", 'Roboto')
                     .attr("font-size", "15px")
@@ -1043,7 +1065,7 @@
                 mouseoverLinkData.append("text")
                     .attr("x", info_svg_width_start + 3 * display_offset)
                     .attr("y", display_offset * 2)
-                    .text(d.source.Title)
+                    .text(capFirstWord(d.source.Title))
                     .attr("text-transform", "capitalize")
                     .attr("font-family", 'Raleway')
                     .attr("font-size", "30px")
@@ -1054,7 +1076,7 @@
                 mouseoverLinkData.append("text")
                     .attr("x", info_svg_width_start + 3 * display_offset)
                     .attr("y", display_offset * 3)
-                    .text(d.source.Artist)
+                    .text(capFirstWord(d.source.Artist))
                     .attr("text-transform", "capitalize")
                     .attr("font-family", 'Roboto')
                     .attr("font-size", "15px")
@@ -1076,7 +1098,7 @@
                 mouseoverLinkData.append("text")
                     .attr("x", info_svg_width_start + 3 * display_offset)
                     .attr("y", display_offset * 5)
-                    .text(d.target.Title)
+                    .text(capFirstWord(d.target.Title))
                     .attr("text-transform", "capitalize")
                     .attr("font-family", 'Raleway')
                     .attr("font-size", "30px")
@@ -1087,7 +1109,7 @@
                 mouseoverLinkData.append("text")
                     .attr("x", info_svg_width_start + 3 * display_offset)
                     .attr("y", display_offset * 6)
-                    .text(d.target.Artist)
+                    .text(capFirstWord(d.target.Artist))
                     .attr("text-transform", "capitalize")
                     .attr("font-family", 'Roboto')
                     .attr("font-size", "15px")
