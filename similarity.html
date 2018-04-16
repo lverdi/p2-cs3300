@@ -78,7 +78,7 @@
 
     <script>
         var graph_svg_width = 1200;
-        var graph_svg_height = 800;
+        var graph_svg_height = 1000;
 
         var graph_svg = d3.select("#main").append("svg")
             .attr("width", graph_svg_width)
@@ -119,16 +119,45 @@
             };
         }
 
+        function getSimilarity(lyrics) {
+            lyrics = lyrics.split(" ");
+            var sharedWords = new Map();
+            for (word of lyrics) {
+
+                if (sharedWords.has(word) == false) {
+                    sharedWords.set(word, 1);
+                } else {
+                    sharedWords.set(word, sharedWords.get(word) + 1);
+                }
+            }
+
+            sharedWords = Array.from(sharedWords);
+            sharedWords.sort(function(x, y) {
+                return y[1] - x[1];
+            });
+
+            return sharedWords;
+        }
+
         function getSimilarities(lyrics1, lyrics2) {
             lyrics1 = lyrics1.split(" ");
             lyrics2 = lyrics2.split(" ");
-            sharedWords = [];
+            var sharedWords = new Map();
             for (word of lyrics1) {
                 if (lyrics2.indexOf(word) != -1) {
-                    sharedWords.push(word);
+                    if (sharedWords.has(word) == false) {
+                        sharedWords.set(word, 1);
+                    } else {
+                        sharedWords.set(word, sharedWords.get(word) + 1);
+                    }
                 }
             }
-            sharedWords = [...new Set(sharedWords)];
+
+            sharedWords = Array.from(sharedWords);
+            sharedWords.sort(function(x, y) {
+                return y[1] - x[1];
+            });
+
             return sharedWords;
         }
 
@@ -141,6 +170,9 @@
 
         var song_data; //stores song data
         var overlap_top; //stores overlap data; preprocessed in python
+
+        var node; //stores all nodes
+        var link; //stores all links
 
         d3.queue()
             .defer(d3.csv, "song_data.csv", parseNode)
@@ -179,7 +211,7 @@
                 var link_width = 1;
                 var link_select_width = 10;
 
-                var link = graph_svg.append("g")
+                link = graph_svg.append("g")
                     .attr("class", "links")
                     .selectAll("line")
                     .data(overlap_top)
@@ -199,7 +231,7 @@
 
                 var node_r = 8;
 
-                var node = graph_svg.append("g")
+                node = graph_svg.append("g")
                     .attr("class", "nodes")
                     .selectAll("circle")
                     .data(song_data)
@@ -350,6 +382,15 @@
                 var uniqueness = "No lyrics found"
                 if (d.TotalWords != 0) {
                     uniqueness = (100 - d.UniqueWords / d.TotalWords * 100).toFixed(2) + "% repetitive";
+
+                    words_shared_info = getSimilarity(d.Lyrics);
+
+                    words_shared = [];
+                    words_shared_number = [];
+                    words_shared_info.forEach(function(element) {
+                        words_shared.push(element[0]);
+                        words_shared_number.push(element[1]);
+                    });
                 }
                 display.append("text")
                     .attr("x", info_svg_width_start + 3 * display_offset)
@@ -369,7 +410,6 @@
                         .attr("font-size", "16px")
                         .attr("fill", "black")
                         .attr("opacity", 0.8);
-
                     display.append("text")
                         .attr("x", info_svg_width_start + 3 * display_offset)
                         .attr("y", display_offset * 7)
@@ -378,6 +418,54 @@
                         .attr("font-size", "16px")
                         .attr("fill", "black")
                         .attr("opacity", 0.8);
+                    display.append("text")
+                        .attr("x", info_svg_width_start + 3 * display_offset)
+                        .attr("y", display_offset * 9)
+                        .text("word frequency:")
+                        .attr("font-family", 'Roboto')
+                        .attr("font-size", "20px")
+                        .attr("fill", "black");
+
+                    current_index = 0;
+                    current_y = display_offset * 9;
+
+                    words_shared_scale = d3.scaleLinear()
+                        .domain([0, Math.max(...words_shared_number)])
+                        .range([0, info_svg_width - 6 * display_offset])
+                        .clamp(true);
+
+                    var mini_offset = 5;
+                    while (current_y < info_svg_height - display_offset * 2 && current_index < words_shared.length) {
+                        display.append("text")
+                            .attr("x", info_svg_width_start + 3 * display_offset)
+                            .attr("y", current_y + display_offset)
+                            .text(words_shared[current_index])
+                            .attr("text-anchor", "end")
+                            .attr("font-family", 'Roboto')
+                            .attr("font-size", "16px")
+                            .attr("fill", "black")
+                            .attr("opacity", 0.8);
+                        display.append("rect")
+                            .attr("x", info_svg_width_start + mini_offset + 3 * display_offset)
+                            .attr("y", current_y + display_offset * 0.5)
+                            .attr("width", words_shared_scale(words_shared_number[current_index]))
+                            .attr("height", display_offset * 0.5)
+                            .attr("fill", "orange")
+                            .attr("opacity", 0.7);
+                        display.append("text")
+                            .attr("x", info_svg_width_start + 2 * mini_offset + 3 * display_offset + words_shared_scale(words_shared_number[current_index]))
+                            .attr("y", current_y + display_offset)
+                            .text(words_shared_number[current_index])
+                            .attr("text-anchor", "start")
+                            .attr("font-family", 'Roboto')
+                            .attr("font-size", "14px")
+                            .attr("fill", "gray")
+                            .attr("opacity", 0.5);
+                        current_y += display_offset;
+                        current_index += 1;
+                    }
+
+
                 }
             } else {
                 display.remove();
@@ -456,7 +544,16 @@
                 var words_common = 0;
                 if (d.source.TotalWords != 0 && d.target.TotalWords != 0) {
                     avg_words = (d.source.TotalWords + d.target.TotalWords) / 2;
-                    words_shared = getSimilarities(d.source.Lyrics, d.target.Lyrics);
+                    words_shared_info = getSimilarities(d.source.Lyrics, d.target.Lyrics);
+
+                    words_shared = [];
+                    words_shared_number = [];
+                    words_shared_info.forEach(function(element) {
+                        words_shared.push(element[0]);
+                        words_shared_number.push(element[1]);
+                    });
+
+
                     words_common = words_shared.length;
                     similarity = (words_common / avg_words * 100).toFixed(2) + "% lyrically similar";
                 }
@@ -498,15 +595,39 @@
 
                     current_index = 0;
                     current_y = display_offset * 12;
+
+                    words_shared_scale = d3.scaleLinear()
+                        .domain([0, Math.max(...words_shared_number)])
+                        .range([0, info_svg_width - 6 * display_offset])
+                        .clamp(true);
+
+                    var mini_offset = 5;
                     while (current_y < info_svg_height - display_offset * 2 && current_index < words_shared.length) {
                         mouseoverLinkData.append("text")
                             .attr("x", info_svg_width_start + 3 * display_offset)
                             .attr("y", current_y + display_offset)
                             .text(words_shared[current_index])
+                            .attr("text-anchor", "end")
                             .attr("font-family", 'Roboto')
                             .attr("font-size", "16px")
                             .attr("fill", "black")
                             .attr("opacity", 0.8);
+                        mouseoverLinkData.append("rect")
+                            .attr("x", info_svg_width_start + mini_offset + 3 * display_offset)
+                            .attr("y", current_y + display_offset * 0.5)
+                            .attr("width", words_shared_scale(words_shared_number[current_index]))
+                            .attr("height", display_offset * 0.5)
+                            .attr("fill", "orange")
+                            .attr("opacity", 0.7);
+                        mouseoverLinkData.append("text")
+                            .attr("x", info_svg_width_start + 2 * mini_offset + 3 * display_offset + words_shared_scale(words_shared_number[current_index]))
+                            .attr("y", current_y + display_offset)
+                            .text(words_shared_number[current_index])
+                            .attr("text-anchor", "start")
+                            .attr("font-family", 'Roboto')
+                            .attr("font-size", "14px")
+                            .attr("fill", "gray")
+                            .attr("opacity", 0.5);
                         current_y += display_offset;
                         current_index += 1;
                     }
