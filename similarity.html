@@ -59,6 +59,7 @@
             text-align: left;
             width: 1200px;
         }
+
     </style>
 </head>
 
@@ -169,7 +170,7 @@
         var link; //stores all links
 
         d3.queue()
-            .defer(d3.csv, "billboard_lyrics_1964-2017.csv", parseNode)
+            .defer(d3.csv, "song_data.csv", parseNode)
             .defer(d3.csv, "overlap_top.csv", parseLink)
             .await(function(error, data1, data2) {
                 song_data_all = data1;
@@ -201,7 +202,7 @@
 
             var smallest_word_size = 6;
             var largest_word_size = 12;
-            var wordSizeScale = d3.scaleSqrt()
+            var wordSizeScale = d3.scaleLinear()
                 .domain(d3.extent(totalWordArray))
                 .range([smallest_word_size, largest_word_size])
                 .clamp(true);
@@ -280,7 +281,6 @@
             simulation
                 .nodes(song_data)
                 .on("tick", ticked);
-            console.log(song_data.length)
 
             simulation.force("link")
                 .links(overlap_top);
@@ -653,6 +653,7 @@
             }
 
         }
+
     </script>
 
 </body>
