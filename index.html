@@ -1,551 +1,1213 @@
 <html>
+
 <head>
-<title>PROJECT 2</title>
-<script src="scripts/d3.js"></script>
-<script src="scripts/jquery.js"></script>
+    <title>PROJECT 2</title>
+    <script src="scripts/d3.js"></script>
+    <script src="scripts/jquery.js"></script>
 
-<style>
-@font-face { font-family: "Raleway"; src: url("fonts/Raleway-Regular.ttf")}
+    <style>
+        @font-face {
+            font-family: "Raleway";
+            src: url("fonts/Raleway-Regular.ttf")
+        }
 
-*{
-    transition: all ease-in-out 550ms;
-}
+        @font-face {
+            font-family: "Roboto";
+            src: url("fonts/Roboto-Medium.ttf")
+        }
 
-body {
-  background-color: #25274D;
-  font-family: 'Raleway', sans-serif;
-  color: #AAABB8;
-}
+        /*
+ * { transition: all ease-in-out 550ms; }
+*/
 
-h1 {
-  display: inline-block;
-  vertical-align: middle;
-  font-size:5em;
-}
+        body {
+            background-color: #25274D;
+            font-family: 'Raleway', sans-serif;
+            color: #AAABB8;
+        }
 
-circle {
-  transition: opacity 600ms;
-}
+        h1 {
+            display: inline-block;
+            vertical-align: middle;
+            font-size: 4em;
+            margin: 0px;
+            margin-bottom: 0.2em;
+        }
 
-#title {
-  width: 80%;
-  height: auto;
-  margin: auto;
-  font-size: 20px;
-}
+        p {
+            display: inline-block;
+            font-family: 'Roboto', sans-serif;
+            vertical-align: middle;
+            font-size: 1.2em;
+            margin-left: 5em;
+            margin-right: 5em;
+            margin-bottom: 5em;
+        }
 
-#yearDisplay {
-  color: #AAABB8;
-  font-size: 24px;
-  margin-left: 46%;
-}
+        circle {
+            transition: opacity 600ms;
+        }
 
-#yearDisplay span {
-  color: #2E9CCA;
-  font-size: 32px;
-}
+        #title {
+            width: 80%;
+            height: auto;
+            margin: auto;
+            font-size: 20px;
+        }
 
-#searchBar {
-  margin-left: 25%;
-  height: 40px;
-  width: 15%;
-  background: #AAABB8;
-  font-size: 20px;
-  font-family: 'Raleway', sans-serif;
-  border: none;
-  padding-left: 5px;
-}
+        #yearDisplay {
+            color: #AAABB8;
+            font-family: 'Roboto', sans-serif;
+            font-size: 24px;
+            margin-left: 46%;
+        }
 
-#main {
- 	padding: 1em;
-  border: none;
- 	display: inline-block;
- 	margin: 0 auto;
-  background-color: #464866;
-}
+        #yearDisplay span {
+            color: #2E9CCA;
+            font-family: 'Roboto', sans-serif;
+            font-size: 32px;
+        }
 
-#info {
-  padding: 1em;
-  border: none;
- 	display: inline-block;
- 	margin: 30px auto;
-  background-color: #464866;
-}
+        #searchBar {
+            margin-left: 25%;
+            height: 40px;
+            width: 15%;
+            background: #AAABB8;
+            font-size: 20px;
+            font-family: 'Roboto', sans-serif;
+            border: none;
+            padding-left: 5px;
+        }
 
-.toolbar {
-  display: flex;
-  align-items: center;
-}
+        #main {
+            padding: 1em;
+            border: none;
+            display: inline-block;
+            margin: 0 auto;
+            background-color: #464866;
+        }
 
-.mainAxis {
-  font-size: 15px;
-  color: white;
-  font-family: 'Raleway', sans-serif;
-}
+        #info {
+            padding: 1em;
+            border: none;
+            display: inline-block;
+            margin: 30px auto;
+            background-color: #464866;
+        }
 
-.slidecontainer {
-    width: 100%;
-}
+        .toolbar {
+            display: flex;
+            align-items: center;
+        }
 
-.slider {
-    -webkit-appearance: none;
-    height: 25px;
-    background: #29648A;
-    outline: none;
-    opacity: 0.7;
-    -webkit-transition: .2s;
-    transition: opacity .2s;
-}
+        .mainAxis {
+            font-size: 15px;
+            color: white;
+            font-family: 'Raleway', sans-serif;
+        }
 
-.slider:hover {
-    opacity: 1;
-}
+        .slidecontainer {
+            width: 100%;
+        }
 
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    border-radius:25px;
-    width: 25px;
-    height: 25px;
-    background: #38c4ff ;
-    cursor: pointer;
-}
+        .slider {
+            -webkit-appearance: none;
+            height: 25px;
+            background: #29648A;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
 
-.slider::-moz-range-thumb {
-    border-radius:25px;
-    width: 25px;
-    height: 25px;
-    background: #38c4ff;
-    cursor: pointer;
-}
+        .slider:hover {
+            opacity: 1;
+        }
 
-</style>
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            border-radius: 25px;
+            width: 25px;
+            height: 25px;
+            background: #38c4ff;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            border-radius: 25px;
+            width: 25px;
+            height: 25px;
+            background: #38c4ff;
+            cursor: pointer;
+        }
+
+    </style>
 </head>
+
 <body>
-	<div id="title" align="center">
-		<h1>Lyrics in Popular Songs in the English Language.</h1>
-		<p> Analyzing lyrics in the top 100 Billboard songs and their prevalence in the top words of the English language. <br>
-        You can move the slider to select top 100 songs from a year, or search for a word to see where it appears in the data.</p>
-	</div>
-	<div class="center" align="center">
-    <div class="toolbar">
-      <h3 id="yearDisplay"> Year: <span>2017</span></h3>
-      <input id="searchBar" type="text" placeholder="Search for a word">
+    <div id="title" align="center">
+        <h1>Lyric analysis of 50 years of Billboard Top 100 songs</h1>
+        <p> We looked at every song on the year-end Billboard Top 100 chart from 1965 to 2017 and analyzed the lyrics to find out how simple (percentage of words that are the 1000 most common in the English language), repetitive (percentage of repeated words in a single song), and similar (percentage of shared words between two songs) they are. <br><br> You can move the slider to select top 100 songs from a year, or search for a word to see where it appears in the data.</p>
     </div>
-      <div class = "slidercontainter">
-        <input class = "slider" id="slider2" type="range" min="0" max="52" value="52"/>
-      </div>
+    <div class="center" align="center" id="center">
+        <div class="toolbar">
+            <h3 id="yearDisplay"> Year: <span>2017</span></h3>
+            <input id="searchBar" type="text" placeholder="Search for a word">
+        </div>
+        <div class="slidercontainter">
+            <input class="slider" id="slider2" type="range" min="0" max="52" value="52" />
+        </div>
 
-		<svg id="main" width='90%' height='750' align="center"></svg>
-    <svg id="info" width='80%' height='600' align="center"></svg>
+        <svg id="main" width='90%' height='750' align="center"></svg>
+        <svg id="info" width='90%' height='600' align="center"></svg>
 
-	</div>
+        <div class="main" id="main2">
+        </div>
 
-	</div>
-	<script>
+    </div>
 
-  function parseLine (line) {
-    var wordArray = line["Lyrics"].split(" ");
-    var dict = {};
-    for (var i = 0; i < wordArray.length; i++) {
-      if (dict[wordArray[i]] == undefined) {
-        dict[wordArray[i]] = 1;
-      } else {
-        dict[wordArray[i]] = dict[wordArray[i]] + 1;
-      }
-    }
-    return {
-      Rank: Number(line["Rank"]),
-      Title: line["Song"],
-      Artist: line["Artist"],
-      Year: Number(line["Year"]),
-      Lyrics: dict
-    };
-  }
-
-  var topWords = [];
-  d3.text("top1000.txt", function(data) {
-    var topWordsPrelim = d3.csvParseRows(data);
-    for (var i = 0; i < topWordsPrelim.length; i++) {
-      topWords.push(topWordsPrelim[i][0]);
-    }
-  });
-
-  var graphHeight = document.getElementById("main").clientHeight;
-  var graphWidth = document.getElementById("main").clientWidth;
-  var infoHeight = document.getElementById("info").clientHeight;
-  var infoWidth = document.getElementById("info").clientWidth;
-  var axisPadding = 40;
-  var currentYear = "2017";
-  var nWords = 500;
-  var points = [];
-  var wordPoints = [];
-  var circles;
-  var nestedData;
-
-  var mainsvg = d3.select("#main"),
-  g = mainsvg.append("g").attr("transform", "translate(" + 0 + "," + axisPadding  + ")");
-  var infosvg = d3.select("#info");
-
-  document.getElementById("slider2").style.width = graphWidth;
-
-  mainsvg.append("text")
-  .attr("id", "SongName")
-  .attr("x", graphWidth / 2)
-  .attr("y", graphHeight / 10)
-  .attr("text-anchor", "middle")
-  .attr("fill", "#AAABB8")
-  .style("font-size", "30pt");
-
-  mainsvg.append("text")
-  .attr("id", "loading")
-  .attr("x", graphWidth / 2)
-  .attr("y", graphHeight / 2)
-  .attr("text-anchor", "middle")
-  .attr("fill", "#AAABB8")
-  .style("font-size", "40pt")
-  .style("opacity", "1")
-  .text("Loading...");
-
-  infosvg.append("text")
-  .attr("id", "placeholderInfo")
-  .attr("x", infoWidth / 2)
-  .attr("y", infoHeight / 2)
-  .attr("text-anchor", "middle")
-  .attr("fill", "#AAABB8")
-  .style("font-size", "30pt")
-  .style("opacity", "1")
-  .text("Click on a song to get more details");
-
-  var xScaleMain = d3.scaleLinear()
-  .domain([1, 100])
-  .range([axisPadding, graphWidth - axisPadding]);
-
-  var yScaleMain = d3.scaleLinear()
-  .domain([15, 90])
-  .range([graphHeight - axisPadding, axisPadding]);
-
-  var rScaleTiers = d3.scaleLinear()
-  .domain([1, 70])
-  .range([5, 10]);
-
-  var fillScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5]).range(["#FEFFFF", "#090977", "#9f0aad", "#ff269c", "#05b27b", "#f73636"]);
-  var inverseFillScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5]).range(["#090977", "#FEFFFF", "#FEFFFF", "#FEFFFF", "#FEFFFF", "#FEFFFF"]);
-
-  mainsvg.append("g")
-  .attr("transform", "translate(" + axisPadding / 2  + ", " + 0  + ")")
-  .attr("class", "mainAxis")
-  .style("opacity", "0")
-  .call(YAxis);
-
-  mainsvg.append("g")
-  .attr("transform", "translate(0, " + (graphHeight - axisPadding * 2) + ")")
-  .attr("class", "mainAxis")
-  .style("opacity", "0")
-  .call(XAxis);
-
-  function XAxis(g) {
-    g.call(d3.axisTop(xScaleMain));
-    g.select(".domain").remove();
-    g.selectAll(".tick text")
-    .attr("fill", "#AAABB8");
-  }
-
-  function YAxis(g) {
-    g.call(d3.axisLeft(yScaleMain));
-    g.select(".domain").remove();
-    g.selectAll(".tick:not(:first-of-type) line")
-    .attr("stroke", "#AAABB8")
-    .attr("stroke-dasharray", "3, 8")
-    .attr("x1", graphWidth - axisPadding * 2)
-    .attr("x2", -axisPadding / 2);
-    g.selectAll(".tick text")
-    .attr("fill", "#AAABB8")
-    .attr("x", 4)
-    .attr("dy", -4);
-  }
-
-  function isYear(year) {
-      return year.Year === currentYear;
-  }
-
-  d3.csv("billboard_lyrics_1964-2017.csv", parseLine, function (error, data) {
-
-    rawData = data;
-
-    nestedData = d3.nest()
-    .key(function (d) { return d.Year; })
-    .entries(data);
-
-    yearData = nestedData.map(function (year) {
-      var result = { Year: year.key, Songs: year.values };
-      return result;
-    });
-    showPointsForYear();
-  });
-
-  var slider2 = document.getElementById("slider2");
-      slider2.oninput = function () {
-        total = parseInt(slider2.value) + 1965;
-        currentYear = (total).toString();
-        document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
-      };
-      slider2.onchange = function () {
-        wordPoints = [];
-        points = [];
-        d3.selectAll("circle").remove();
-        document.getElementById("searchBar").value = "";
-        total = parseInt(slider2.value) + 1965;
-        currentYear = (total).toString();
-        document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
-        showPointsForYear();
-      };
-
-  var search = document.getElementById("searchBar");
-      search.oninput = function () {
-        var input = search.value.toLowerCase();
-        var pts = d3.selectAll(".wordTiers");
-        var songpts = d3.selectAll(".songbubbles");
-        if (input == "") {
-          pts.style("opacity", 0.9);
-          songpts.style("opacity", 0.25);
-          songpts.style("fill", "white");
-        } else {
-          pts.style("opacity", 0.2);
-          songpts.style("opacity", 0.15);
-          songpts.style("fill", "white");
-          var searchResults = [];
-          var selectedYear = yearData.find(isYear);
-          var yearSongs = selectedYear.Songs;
-          var topNWords = topWords.slice(0, nWords);
-          for (var i = 0; i < yearSongs.length; i++) {
-            var s = yearSongs[i];
-            var songLyrics = Object.keys(s.Lyrics);
-            for (var j = 0; j < songLyrics.length; j++) {
-              var lyric = songLyrics[j];
-              if (lyric.includes(input)) {
-                document.getElementById("song" + s.Rank).style.fill = "#3399ff";
-                document.getElementById("song" + s.Rank).style.opacity = 0.8;
-                var idx = topNWords.indexOf(lyric);
-                if (idx != -1) {
-                  var tier = Math.floor(idx / 100);
-                  document.getElementById("tier" + tier + "-" + s.Rank).style.opacity = 1;
+    <script>
+        function parseLine(line) {
+            var wordArray = line["Lyrics"].split(" ");
+            var dict = {};
+            for (var i = 0; i < wordArray.length; i++) {
+                if (dict[wordArray[i]] == undefined) {
+                    dict[wordArray[i]] = 1;
+                } else {
+                    dict[wordArray[i]] = dict[wordArray[i]] + 1;
                 }
-              }
             }
-          }
+            return {
+                Rank: Number(line["Rank"]),
+                Title: line["Song"],
+                Artist: line["Artist"],
+                Year: Number(line["Year"]),
+                Lyrics: dict
+            };
         }
-      };
 
-  function updateDisplay() {
-    circles
-    .attr("cx", function(d) { return d.x; })
-    .attr("cy", function(d) { return d.y; });
-   }
+        var topWords = [];
+        d3.text("top1000.txt", function(data) {
+            var topWordsPrelim = d3.csvParseRows(data);
+            for (var i = 0; i < topWordsPrelim.length; i++) {
+                topWords.push(topWordsPrelim[i][0]);
+            }
+        });
 
-  function showPointsForYear() {
-    var topNWords = topWords.slice(0, nWords);
-    var selectedYear = yearData.find(isYear);
-    var yearSongs = selectedYear.Songs;
-    for (var i = 0; i < yearSongs.length; i++) {
-      var s = yearSongs[i];
-      var tierList = [0, 0, 0, 0, 0, 0];
-      var tierWords = [[], [], [], [], [], []];
-      var songLyrics = Object.keys(s.Lyrics);
-      var totalWords = 0;
-      var uniqueWords = songLyrics.length;
-      var uniqueInTop = 0;
-      var totalInTop = 0;
-      for (var j = 0; j < songLyrics.length; j++) {
-        var word = songLyrics[j];
-        totalWords += s.Lyrics[word];
-        var idx = topNWords.indexOf(word);
-        if (idx != -1) {
-          tierList[Math.floor(idx / 100)] += s.Lyrics[word];
-          tierWords[Math.floor(idx / 100)].push(word);
-          uniqueInTop++;
-          totalInTop += s.Lyrics[word];
-        } else {
-          tierList[5] += s.Lyrics[word];
-          tierWords[5].push(word);
+        var graphHeight = document.getElementById("main").clientHeight;
+        var graphWidth = document.getElementById("main").clientWidth;
+        var infoHeight = document.getElementById("info").clientHeight;
+        var infoWidth = document.getElementById("info").clientWidth;
+        var axisPadding = 40;
+        var currentYear = "2017";
+        var nWords = 500;
+        var points = [];
+        var wordPoints = [];
+        var circles;
+        var nestedData;
+
+        var mainsvg = d3.select("#main"),
+            g = mainsvg.append("g").attr("transform", "translate(" + 0 + "," + axisPadding + ")");
+        var infosvg = d3.select("#info");
+
+        document.getElementById("slider2").style.width = graphWidth;
+
+        mainsvg.append("text")
+            .attr("id", "SongName")
+            .attr("x", graphWidth / 2)
+            .attr("y", graphHeight / 10)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "30pt");
+
+        mainsvg.append("text")
+            .attr("id", "loading")
+            .attr("x", graphWidth / 2)
+            .attr("y", graphHeight / 2)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "40pt")
+            .style("opacity", "1")
+            .text("Loading...");
+
+        infosvg.append("text")
+            .attr("id", "placeholderInfo")
+            .attr("x", infoWidth / 2)
+            .attr("y", infoHeight / 2)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "30pt")
+            .style("opacity", "1")
+            .text("Click on a song to get more details");
+
+        var xScaleMain = d3.scaleLinear()
+            .domain([1, 100])
+            .range([axisPadding, graphWidth - axisPadding]);
+
+        var yScaleMain = d3.scaleLinear()
+            .domain([15, 90])
+            .range([graphHeight - axisPadding, axisPadding]);
+
+        var rScaleTiers = d3.scaleLinear()
+            .domain([1, 70])
+            .range([5, 10]);
+
+        var fillScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5]).range(["#FEFFFF", "#090977", "#9f0aad", "#ff269c", "#05b27b", "#f73636"]);
+        var inverseFillScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5]).range(["#090977", "#FEFFFF", "#FEFFFF", "#FEFFFF", "#FEFFFF", "#FEFFFF"]);
+
+        mainsvg.append("g")
+            .attr("transform", "translate(" + axisPadding / 2 + ", " + 0 + ")")
+            .attr("class", "mainAxis")
+            .style("opacity", "0")
+            .call(YAxis);
+
+        mainsvg.append("g")
+            .attr("transform", "translate(0, " + (graphHeight - axisPadding * 2) + ")")
+            .attr("class", "mainAxis")
+            .style("opacity", "0")
+            .call(XAxis);
+
+        function XAxis(g) {
+            g.call(d3.axisTop(xScaleMain));
+            g.select(".domain").remove();
+            g.selectAll(".tick text")
+                .attr("fill", "#AAABB8");
         }
-      }
-      var uniqueRatio = 100 * uniqueInTop / uniqueWords;
-      var totalRatio = 100 * totalInTop / totalWords;
 
-      for (var k = 0; k < tierList.length - 1; k++) {
-        if (tierList[k] != 0) {
-          wordPoints.push({
-            "rank": s.Rank,
-            "title": s.Title,
-            "artist": s.Artist,
-            "r": rScaleTiers(tierList[k]),
-            "total": totalRatio,
-            "unique": uniqueRatio,
-            "tier": k
-          });
+        function YAxis(g) {
+            g.call(d3.axisLeft(yScaleMain));
+            g.select(".domain").remove();
+            g.selectAll(".tick:not(:first-of-type) line")
+                .attr("stroke", "#AAABB8")
+                .attr("stroke-dasharray", "3, 8")
+                .attr("x1", graphWidth - axisPadding * 2)
+                .attr("x2", -axisPadding / 2);
+            g.selectAll(".tick text")
+                .attr("fill", "#AAABB8")
+                .attr("x", 4)
+                .attr("dy", -4);
         }
-      }
 
-      points.push({
-        "rank": s.Rank,
-        "total": totalRatio,
-        "totalInTop": totalInTop,
-        "unique": uniqueRatio,
-        "title": s.Title,
-        "artist": s.Artist,
-        "tiers": tierList,
-        "words": tierWords
-      });
-    }
+        function isYear(year) {
+            return year.Year === currentYear;
+        }
 
-    for (var k = 0; k < points.length; k++) {
-      var current = points[k];
-      var add = 35;
-      if (current.totalInTop <= 50) {
-        add = 80;
-      }
-      mainsvg.append("circle")
-      .attr("id", "song" + current.rank)
-      .attr("class", "songbubbles")
-      .attr("r", rScaleTiers(current.totalInTop + add))
-      .attr("cx", xScaleMain(current.rank))
-      .attr("cy", yScaleMain(Math.max(current.total, 15)))
-      .style("fill", "white")
-      .style("opacity", 0.25);
-    }
+        d3.csv("billboard_lyrics_1964-2017.csv", parseLine, function(error, data) {
 
-    circles = mainsvg.selectAll(".wordTiers").data(wordPoints).enter().append("circle")
-    .attr("id", function (d) { return "tier" + d.tier + "-" + d.rank; })
-    .attr("r", function (d) { return d.r; })
-    .attr("cx", function (d) { return xScaleMain(d.rank); })
-    .attr("cy", yScaleMain(50))
-    .attr("class", "wordTiers")
-    .style("fill", function (d) { return fillScale(d.tier); })
-    .style("opacity", 0.9)
-    .on("mouseover", function (d) {
-      mainsvg.select("#SongName").text("#" + d.rank + " " + d.title.toUpperCase() + " - " + capFirstWord(d.artist));
-    });
+            rawData = data;
 
-    $(".wordTiers").click(function(event) {
-      event.preventDefault();
-
-      $("body, html").animate({
-        scrollTop: $("#info").offset().top
-      }, 400, 'linear');
-    });
-
-    circles.on("click", function (d) {
-      d3.selectAll("#info > *").remove();
-      var infosvg = d3.select('#info');
-      var selected = points.find(function (s) {
-          return s.rank === d.rank;
-      });
-      d3.select("#info").style("background-color", "#464866");
-      infosvg.append("text")
-      .attr("text-anchor", "middle")
-      .attr("x", infoWidth / 2)
-      .attr("y", infoHeight / 11)
-      .text("#" + selected.rank + " " + selected.title.toUpperCase() + " - " + capFirstWord(selected.artist))
-      .style("fill", "#AAABB8")
-      .style("font-size", "32px");
-
-      infosvg.append("text")
-      .attr("text-anchor", "middle")
-      .attr("x", infoWidth / 2)
-      .attr("y", infoHeight * 3 / 11)
-      .text("% unique")
-      .style("fill", "#AAABB8")
-      .style("font-size", "28px");
-
-      var radius = infoHeight * 0.25;
-      var donutWidth = radius / 2;
-      var piesvg = d3.select('#info')
-          .append('svg')
-          .attr('width', infoHeight)
-          .attr('height', infoHeight)
-          .append('g')
-          .attr('transform', 'translate(' + infoHeight / 3 +
-            ',' + infoHeight / 2 + ')');
-
-      var arc = d3.arc()
-          .innerRadius(radius - donutWidth)
-          .outerRadius(radius);
-      var pie = d3.pie()
-          .value(function(d) { return d; })
-          .sort(null);
-      var path = piesvg.selectAll('path')
-                .data(pie(selected.tiers))
-                .enter()
-                .append('path')
-                .attr('d', arc)
-                .attr('fill', function(d, i) {
-                  return fillScale(i);
+            nestedData = d3.nest()
+                .key(function(d) {
+                    return d.Year;
                 })
-                .attr('id', function(d, i) {
-                  return "slice" + i;
+                .entries(data);
+
+            yearData = nestedData.map(function(year) {
+                var result = {
+                    Year: year.key,
+                    Songs: year.values
+                };
+                return result;
+            });
+            showPointsForYear();
+        });
+
+        var slider2 = document.getElementById("slider2");
+        slider2.oninput = function() {
+            total = parseInt(slider2.value) + 1965;
+            currentYear = (total).toString();
+            document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
+        };
+        slider2.onchange = function() {
+            wordPoints = [];
+            points = [];
+            d3.selectAll("circle").remove();
+            document.getElementById("searchBar").value = "";
+            total = parseInt(slider2.value) + 1965;
+            currentYear = (total).toString();
+            document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
+            showPointsForYear();
+        };
+
+        var search = document.getElementById("searchBar");
+        search.oninput = function() {
+            var input = search.value.toLowerCase();
+            var pts = d3.selectAll(".wordTiers");
+            var songpts = d3.selectAll(".songbubbles");
+            if (input == "") {
+                pts.style("opacity", 0.9);
+                songpts.style("opacity", 0.25);
+                songpts.style("fill", "white");
+            } else {
+                pts.style("opacity", 0.2);
+                songpts.style("opacity", 0.15);
+                songpts.style("fill", "white");
+                var searchResults = [];
+                var selectedYear = yearData.find(isYear);
+                var yearSongs = selectedYear.Songs;
+                var topNWords = topWords.slice(0, nWords);
+                for (var i = 0; i < yearSongs.length; i++) {
+                    var s = yearSongs[i];
+                    var songLyrics = Object.keys(s.Lyrics);
+                    for (var j = 0; j < songLyrics.length; j++) {
+                        var lyric = songLyrics[j];
+                        if (lyric.includes(input)) {
+                            document.getElementById("song" + s.Rank).style.fill = "#3399ff";
+                            document.getElementById("song" + s.Rank).style.opacity = 0.8;
+                            var idx = topNWords.indexOf(lyric);
+                            if (idx != -1) {
+                                var tier = Math.floor(idx / 100);
+                                document.getElementById("tier" + tier + "-" + s.Rank).style.opacity = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        function updateDisplay() {
+            circles
+                .attr("cx", function(d) {
+                    return d.x;
                 })
-                .on("mouseover", function (d) {
-                  piesvg.selectAll("path").style("opacity", 0.3);
-                  piesvg.selectAll("#slice" + d.index).style("opacity", 1);
-                })
-                .on("mouseout", function (d) {
-                  piesvg.selectAll("path").style("opacity", 1);
-                })
-                .on("click", function (d) {
-                  d3.selectAll(".wordDetails").remove();
-                  var w = selected.tierWords;
-                  var range = (d.index + 1) * 100;
-                  var text;
-                  if (d.index != 5) {
-                    text = "Top Words #" + (range - 99) + "-" + range;
-                  } else {
-                    text = "Words not in Top 500";
-                  }
-                  piesvg.selectAll("path").style("opacity", 1);
-                  infosvg.append("text")
-                  .attr("text-anchor", "middle")
-                  .attr("class", "wordDetails")
-                  .attr("x", infoWidth * 0.775)
-                  .attr("y", infoHeight * 3 / 11)
-                  .text(text)
-                  .style("fill", fillScale(d.index))
-                  .style("text-decoration", "underline")
-                  .style("font-size", "24px");
-                  if (d.index == 0) {
-                    d3.select("#info").style("background-color", "#c7cccc");
-                  } else {
-                    d3.select("#info").style("background-color", fillScale(d.index));
-                  }
-                  d3.selectAll("#info text").style("fill", inverseFillScale(d.index));
+                .attr("cy", function(d) {
+                    return d.y;
                 });
-    });
+        }
 
-    var simulation = d3.forceSimulation();
-    simulation
-    .force("x", d3.forceX(d => xScaleMain(d.rank)).strength(1))
-    .force("y", d3.forceY(d => yScaleMain(Math.max(d.total, 15))).strength(1))
-    .force("collision", d3.forceCollide(d => d.r));
+        function showPointsForYear() {
+            var topNWords = topWords.slice(0, nWords);
+            var selectedYear = yearData.find(isYear);
+            var yearSongs = selectedYear.Songs;
+            for (var i = 0; i < yearSongs.length; i++) {
+                var s = yearSongs[i];
+                var tierList = [0, 0, 0, 0, 0, 0];
+                var tierWords = [
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    []
+                ];
+                var songLyrics = Object.keys(s.Lyrics);
+                var totalWords = 0;
+                var uniqueWords = songLyrics.length;
+                var uniqueInTop = 0;
+                var totalInTop = 0;
+                for (var j = 0; j < songLyrics.length; j++) {
+                    var word = songLyrics[j];
+                    totalWords += s.Lyrics[word];
+                    var idx = topNWords.indexOf(word);
+                    if (idx != -1) {
+                        tierList[Math.floor(idx / 100)] += s.Lyrics[word];
+                        tierWords[Math.floor(idx / 100)].push(word);
+                        uniqueInTop++;
+                        totalInTop += s.Lyrics[word];
+                    } else {
+                        tierList[5] += s.Lyrics[word];
+                        tierWords[5].push(word);
+                    }
+                }
+                var uniqueRatio = 100 * uniqueInTop / uniqueWords;
+                var totalRatio = 100 * totalInTop / totalWords;
 
-    simulation
-    .nodes(wordPoints)
-    .on("tick", updateDisplay);
+                for (var k = 0; k < tierList.length - 1; k++) {
+                    if (tierList[k] != 0) {
+                        wordPoints.push({
+                            "rank": s.Rank,
+                            "title": s.Title,
+                            "artist": s.Artist,
+                            "r": rScaleTiers(tierList[k]),
+                            "total": totalRatio,
+                            "unique": uniqueRatio,
+                            "tier": k
+                        });
+                    }
+                }
 
-    for (var i = 0; i < 15; ++i) {
-      simulation.tick();
-    }
-    updateDisplay();
-    mainsvg.select("#loading").style("opacity", "0");
-    mainsvg.selectAll(".mainAxis").style("opacity", "1");
-  }
+                points.push({
+                    "rank": s.Rank,
+                    "total": totalRatio,
+                    "totalInTop": totalInTop,
+                    "unique": uniqueRatio,
+                    "title": s.Title,
+                    "artist": s.Artist,
+                    "tiers": tierList,
+                    "words": tierWords
+                });
+            }
 
-  function capFirstWord(str) {
-    return str.split(' ').map(function(w) {
-      return w.replace(w[0], w[0].toUpperCase());
-    }).join(' ');
-  }
+            for (var k = 0; k < points.length; k++) {
+                var current = points[k];
+                var add = 35;
+                if (current.totalInTop <= 50) {
+                    add = 80;
+                }
+                mainsvg.append("circle")
+                    .attr("id", "song" + current.rank)
+                    .attr("class", "songbubbles")
+                    .attr("r", rScaleTiers(current.totalInTop + add))
+                    .attr("cx", xScaleMain(current.rank))
+                    .attr("cy", yScaleMain(Math.max(current.total, 15)))
+                    .style("fill", "white")
+                    .style("opacity", 0.25);
+            }
 
-	</script>
+            circles = mainsvg.selectAll(".wordTiers").data(wordPoints).enter().append("circle")
+                .attr("id", function(d) {
+                    return "tier" + d.tier + "-" + d.rank;
+                })
+                .attr("r", function(d) {
+                    return d.r;
+                })
+                .attr("cx", function(d) {
+                    return xScaleMain(d.rank);
+                })
+                .attr("cy", yScaleMain(50))
+                .attr("class", "wordTiers")
+                .style("fill", function(d) {
+                    return fillScale(d.tier);
+                })
+                .style("opacity", 0.9)
+                .on("mouseover", function(d) {
+                    mainsvg.select("#SongName").text("#" + d.rank + " " + d.title.toUpperCase() + " - " + capFirstWord(d.artist));
+                });
+
+            $(".wordTiers").click(function(event) {
+                event.preventDefault();
+
+                $("body, html").animate({
+                    scrollTop: $("#info").offset().top
+                }, 400, 'linear');
+            });
+
+            circles.on("click", function(d) {
+                d3.selectAll("#info > *").remove();
+                var infosvg = d3.select('#info');
+                var selected = points.find(function(s) {
+                    return s.rank === d.rank;
+                });
+                d3.select("#info").style("background-color", "#464866");
+                infosvg.append("text")
+                    .attr("text-anchor", "middle")
+                    .attr("x", infoWidth / 2)
+                    .attr("y", infoHeight / 11)
+                    .text("#" + selected.rank + " " + selected.title.toUpperCase() + " - " + capFirstWord(selected.artist))
+                    .style("fill", "#AAABB8")
+                    .style("font-size", "32px");
+
+                infosvg.append("text")
+                    .attr("text-anchor", "middle")
+                    .attr("x", infoWidth / 2)
+                    .attr("y", infoHeight * 3 / 11)
+                    .text("% unique")
+                    .style("fill", "#AAABB8")
+                    .style("font-size", "28px");
+
+                var radius = infoHeight * 0.25;
+                var donutWidth = radius / 2;
+                var piesvg = d3.select('#info')
+                    .append('svg')
+                    .attr('width', infoHeight)
+                    .attr('height', infoHeight)
+                    .append('g')
+                    .attr('transform', 'translate(' + infoHeight / 3 +
+                        ',' + infoHeight / 2 + ')');
+
+                var arc = d3.arc()
+                    .innerRadius(radius - donutWidth)
+                    .outerRadius(radius);
+                var pie = d3.pie()
+                    .value(function(d) {
+                        return d;
+                    })
+                    .sort(null);
+                var path = piesvg.selectAll('path')
+                    .data(pie(selected.tiers))
+                    .enter()
+                    .append('path')
+                    .attr('d', arc)
+                    .attr('fill', function(d, i) {
+                        return fillScale(i);
+                    })
+                    .attr('id', function(d, i) {
+                        return "slice" + i;
+                    })
+                    .on("mouseover", function(d) {
+                        piesvg.selectAll("path").style("opacity", 0.3);
+                        piesvg.selectAll("#slice" + d.index).style("opacity", 1);
+                    })
+                    .on("mouseout", function(d) {
+                        piesvg.selectAll("path").style("opacity", 1);
+                    })
+                    .on("click", function(d) {
+                        d3.selectAll(".wordDetails").remove();
+                        var w = selected.tierWords;
+                        var range = (d.index + 1) * 100;
+                        var text;
+                        if (d.index != 5) {
+                            text = "Top Words #" + (range - 99) + "-" + range;
+                        } else {
+                            text = "Words not in Top 500";
+                        }
+                        piesvg.selectAll("path").style("opacity", 1);
+                        infosvg.append("text")
+                            .attr("text-anchor", "middle")
+                            .attr("class", "wordDetails")
+                            .attr("x", infoWidth * 0.775)
+                            .attr("y", infoHeight * 3 / 11)
+                            .text(text)
+                            .style("fill", fillScale(d.index))
+                            .style("text-decoration", "underline")
+                            .style("font-size", "24px");
+                        if (d.index == 0) {
+                            d3.select("#info").style("background-color", "#c7cccc");
+                        } else {
+                            d3.select("#info").style("background-color", fillScale(d.index));
+                        }
+                        d3.selectAll("#info text").style("fill", inverseFillScale(d.index));
+                    });
+            });
+
+            var simulation = d3.forceSimulation();
+            simulation
+                .force("x", d3.forceX(d => xScaleMain(d.rank)).strength(1))
+                .force("y", d3.forceY(d => yScaleMain(Math.max(d.total, 15))).strength(1))
+                .force("collision", d3.forceCollide(d => d.r));
+
+            simulation
+                .nodes(wordPoints)
+                .on("tick", updateDisplay);
+
+            for (var i = 0; i < 15; ++i) {
+                simulation.tick();
+            }
+            updateDisplay();
+            mainsvg.select("#loading").style("opacity", "0");
+            mainsvg.selectAll(".mainAxis").style("opacity", "1");
+        }
+
+        function capFirstWord(str) {
+            return str.split(' ').map(function(w) {
+                return w.replace(w[0], w[0].toUpperCase());
+            }).join(' ');
+        }
+
+        //=====================
+        //SIMILARITY.HTML
+        //IMPORTED AND FIXED UP
+        //=====================
+
+        var graph_svg_width = d3.select("#main")._groups[0][0].clientWidth;
+        var graph_svg_height = 800;
+        var text_color = "slate grey";
+        var accent_color = "#2E9CCA";
+
+        var graph_svg = d3.select("#main2").append("svg")
+            .attr("id", "graph")
+            .attr("width", graph_svg_width)
+            .attr("height", graph_svg_height)
+        graph_svg.append("rect")
+            .attr("width", graph_svg_width)
+            .attr("height", graph_svg_height)
+            .attr("fill", "white")
+            .attr("opacity", 0.2);
+
+        var info_svg_width = 400;
+        var info_svg_width_start = graph_svg_width - info_svg_width;
+        var info_svg_height = graph_svg_height;
+
+        graph_svg.append("rect")
+            .attr("x", info_svg_width_start)
+            .attr("width", info_svg_width)
+            .attr("height", info_svg_height)
+            .attr("fill", "white")
+            .attr("opacity", 0.5);
+
+        function parseNode(line) {
+            return {
+                Rank: Number(line["Rank"]),
+                Title: line["Song"],
+                Artist: line["Artist"],
+                Year: Number(line["Year"]),
+                Lyrics: line["Lyrics"],
+                TotalWords: Number(line["Total Words"]),
+                UniqueWords: Number(line["Unique Words"])
+            };
+        }
+
+        function parseLink(line) {
+            return {
+                year: parseInt(line["Year"]),
+                source: parseInt(line["Start"]),
+                target: parseInt(line["End"]),
+            };
+        }
+
+        function getSimilarity(lyrics) {
+            lyrics = lyrics.split(" ");
+            var sharedWords = new Map();
+            for (word of lyrics) {
+
+                if (sharedWords.has(word) == false) {
+                    sharedWords.set(word, 1);
+                } else {
+                    sharedWords.set(word, sharedWords.get(word) + 1);
+                }
+            }
+
+            sharedWords = Array.from(sharedWords);
+            sharedWords.sort(function(x, y) {
+                return y[1] - x[1];
+            });
+
+            return sharedWords;
+        }
+
+        function getSimilarities(lyrics1, lyrics2) {
+            lyrics1 = lyrics1.split(" ");
+            lyrics2 = lyrics2.split(" ");
+            var sharedWords = new Map();
+            for (word of lyrics1) {
+                if (lyrics2.indexOf(word) != -1) {
+                    if (sharedWords.has(word) == false) {
+                        sharedWords.set(word, 1);
+                    } else {
+                        sharedWords.set(word, sharedWords.get(word) + 1);
+                    }
+                }
+            }
+
+            sharedWords = Array.from(sharedWords);
+            sharedWords.sort(function(x, y) {
+                return y[1] - x[1];
+            });
+
+            return sharedWords;
+        }
+
+        var slider2 = document.getElementById("slider2");
+        slider2.oninput = function() {
+            total = parseInt(slider2.value) + 1965;
+            currentYear = (total).toString();
+            document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
+            graphPoints(total);
+        };
+        slider2.onchange = function() {
+            total = parseInt(slider2.value) + 1965;
+            currentYear = (total).toString();
+            document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
+        };
+
+
+        var song_data_all; //stores song data
+        var overlap_top_all; //stores overlap data; preprocessed in python
+
+        var node; //stores all nodes
+        var link; //stores all links
+
+        d3.queue()
+            .defer(d3.csv, "song_data.csv", parseNode)
+            .defer(d3.csv, "overlap_top.csv", parseLink)
+            .await(function(error, data1, data2) {
+                song_data_all = data1;
+                overlap_top_all = data2;
+                graphPoints(data1[0].Year);
+            });
+
+        function graphPoints(year) {
+            node = {};
+            link = {};
+            d3.select("#nodes").remove();
+            d3.select("#links").remove();
+
+            var song_data = song_data_all.filter(song => song.Year == year);
+            var overlap_top = overlap_top_all.filter(connection => connection.year == year);
+
+            var separationForce = 75;
+            var simulation = d3.forceSimulation()
+                .force("link", d3.forceLink())
+                .force("charge", d3.forceManyBody().strength(-separationForce))
+                .force("center", d3.forceCenter(graph_svg_width / 3, graph_svg_height / 1.7));
+
+            var totalWordArray = [];
+            for (var i = 0; i < song_data.length; i++) {
+                if (song_data[i].TotalWords != 0) {
+                    totalWordArray.push(song_data[i].TotalWords);
+                }
+            }
+
+            var smallest_word_size = 6;
+            var largest_word_size = 12;
+            var wordSizeScale = d3.scaleLinear()
+                .domain(d3.extent(totalWordArray))
+                .range([smallest_word_size, largest_word_size])
+                .clamp(true);
+
+            var totalRankArray = [];
+            for (var i = 0; i < song_data.length; i++) {
+                totalRankArray.push(song_data[i].Rank);
+            }
+
+            function colorScale(rank) {
+                var internalColorScale = d3.scaleLinear()
+                    .domain(d3.extent(totalRankArray))
+                    .range([accent_color, "gray"])
+                    .clamp(true);
+                return internalColorScale(rank);
+            }
+
+            var link_width = 1;
+            var link_select_width = 10;
+
+            link = graph_svg.append("g")
+                .attr("id", "links")
+                .attr("class", "links")
+                .selectAll("line")
+                .data(overlap_top)
+                .enter().append("line")
+                .attr('stroke', 'gray')
+                .attr("stroke-width", link_width)
+                .on("mouseover", function(d) {
+                    d3.select(this)
+                        .attr("stroke-width", link_select_width)
+                    mouseoverLink(d, true);
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this)
+                        .attr("stroke-width", link_width)
+                    mouseoverLink(d, false)
+                });
+
+            var node_r = 8;
+
+            node = graph_svg.append("g")
+                .attr("id", "nodes")
+                .attr("class", "nodes")
+                .selectAll("circle")
+                .data(song_data)
+                .enter().append("circle")
+                .attr('stroke', 'white')
+                .attr("r", function(d) {
+                    return wordSizeScale(d.TotalWords)
+                })
+                .attr("fill", function(d) {
+                    return colorScale(d.Rank);
+                })
+                .on("mouseover", function(d) {
+
+                    d3.select(this)
+                        .attr("r", function(d) {
+                            return 2 * wordSizeScale(d.TotalWords)
+                        })
+                    displayInfo(d, true);
+                    mouseoverNode(d);
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this)
+                        .attr("r", node_r)
+                    displayInfo(d, false);
+                    mouseoutNode(d);
+                });
+
+
+            node.append("title")
+                .text(function(d) {
+                    return d.id;
+                });
+
+            simulation
+                .nodes(song_data)
+                .on("tick", ticked);
+
+            simulation.force("link")
+                .links(overlap_top);
+
+            simulation.restart();
+
+            function ticked() {
+                link
+                    .attr("x1", function(d) {
+                        return d.source.x;
+                    })
+                    .attr("y1", function(d) {
+                        return d.source.y;
+                    })
+                    .attr("x2", function(d) {
+                        return d.target.x;
+                    })
+                    .attr("y2", function(d) {
+                        return d.target.y;
+                    });
+
+                node
+                    .attr("cx", function(d) {
+                        return d.x;
+                    })
+                    .attr("cy", function(d) {
+                        return d.y;
+                    });
+            }
+        }
+
+        var mouseoverInfo;
+
+        function mouseoverNode(d) {
+            var info_height = 50;
+            var info_width = 400;
+            var info_x_offset = 20;
+
+            var info_x = d.x + info_x_offset;
+            var info_y = d.y - info_height / 2;
+
+            var title_offset = 10
+
+            mouseoverInfo = graph_svg.append("g");
+
+            mouseoverInfo.append("rect")
+                .attr("x", info_x)
+                .attr("y", info_y)
+                .attr("width", info_width)
+                .attr("height", info_height)
+                .attr("fill", "white")
+                .attr("opacity", 0);
+
+            mouseoverInfo.append("text")
+                .attr("x", info_x + title_offset / 2)
+                .attr("y", info_y + 3 * title_offset)
+                .text(d.Title)
+                .attr("text-transform", "capitalize")
+                .attr("font-family", 'Raleway')
+                .attr("font-size", "30px")
+                .attr("fill", "transparent");
+
+            mouseoverInfo.append("text")
+                .attr("x", info_x + title_offset / 2)
+                .attr("y", info_y + 5 * title_offset)
+                .text(d.Artist)
+                .attr("text-transform", "capitalize")
+                .attr("font-family", 'Roboto')
+                .attr("font-size", "15px")
+                .attr("fill", "transparent");
+        }
+
+        function mouseoutNode(d) {
+            mouseoverInfo.remove();
+        }
+
+        var display;
+        var display_offset = 20;
+
+        function displayInfo(d, show) {
+            if (show) {
+                display = graph_svg.append("g");
+
+                //title
+                display.append("text")
+                    .attr("x", info_svg_width_start + 3 * display_offset)
+                    .attr("y", display_offset * 2)
+                    .text(d.Title)
+                    .attr("text-transform", "capitalize")
+                    .attr("font-family", 'Raleway')
+                    .attr("font-size", "30px")
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
+
+                //artist
+                display.append("text")
+                    .attr("x", info_svg_width_start + 3 * display_offset)
+                    .attr("y", display_offset * 3)
+                    .text(d.Artist)
+                    .attr("text-transform", "capitalize")
+                    .attr("font-family", 'Roboto')
+                    .attr("font-size", "15px")
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
+
+                //rank
+                display.append("text")
+                    .attr("x", info_svg_width_start + 1.5 * display_offset)
+                    .attr("y", display_offset * 2)
+                    .text("#" + d.Rank)
+                    .attr("text-anchor", "middle")
+                    .attr("font-family", 'Roboto')
+                    .attr("font-size", "20px")
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
+
+                //uniqueness
+                var uniqueness = "No lyrics found"
+                if (d.TotalWords != 0) {
+                    uniqueness = (100 - d.UniqueWords / d.TotalWords * 100).toFixed(2) + "% repetitive";
+
+                    words_shared_info = getSimilarity(d.Lyrics);
+
+                    words_shared = [];
+                    words_shared_number = [];
+                    words_shared_info.forEach(function(element) {
+                        words_shared.push(element[0]);
+                        words_shared_number.push(element[1]);
+                    });
+                }
+                display.append("text")
+                    .attr("x", info_svg_width_start + 3 * display_offset)
+                    .attr("y", display_offset * 5)
+                    .text(uniqueness)
+                    .attr("font-family", 'Roboto')
+                    .attr("font-size", "20px")
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
+
+                //unique words, total words
+                if (uniqueness != "No lyrics found") {
+                    display.append("text")
+                        .attr("x", info_svg_width_start + 3 * display_offset)
+                        .attr("y", display_offset * 6)
+                        .text(d.UniqueWords + " unique words")
+                        .attr("font-family", 'Roboto')
+                        .attr("font-size", "16px")
+                        .attr("fill", text_color)
+                        .attr("opacity", 0.8);
+                    display.append("text")
+                        .attr("x", info_svg_width_start + 3 * display_offset)
+                        .attr("y", display_offset * 7)
+                        .text(d.TotalWords + " total words")
+                        .attr("font-family", 'Roboto')
+                        .attr("font-size", "16px")
+                        .attr("fill", text_color)
+                        .attr("opacity", 0.8);
+                    display.append("text")
+                        .attr("x", info_svg_width_start + 3 * display_offset)
+                        .attr("y", display_offset * 9)
+                        .text("word frequency:")
+                        .attr("font-family", 'Roboto')
+                        .attr("font-size", "20px")
+                        .attr("fill", text_color);
+
+                    current_index = 0;
+                    current_y = display_offset * 9;
+
+                    words_shared_scale = d3.scaleLinear()
+                        .domain([0, Math.max(...words_shared_number)])
+                        .range([0, info_svg_width - 6 * display_offset])
+                        .clamp(true);
+
+                    var mini_offset = 5;
+                    while (current_y < info_svg_height - display_offset * 2 && current_index < words_shared.length) {
+                        display.append("text")
+                            .attr("x", info_svg_width_start + 3 * display_offset)
+                            .attr("y", current_y + display_offset)
+                            .text(words_shared[current_index])
+                            .attr("text-anchor", "end")
+                            .attr("font-family", 'Roboto')
+                            .attr("font-size", "16px")
+                            .attr("fill", text_color)
+                            .attr("opacity", 0.8);
+                        display.append("rect")
+                            .attr("x", info_svg_width_start + mini_offset + 3 * display_offset)
+                            .attr("y", current_y + display_offset * 0.5)
+                            .attr("width", words_shared_scale(words_shared_number[current_index]))
+                            .attr("height", display_offset * 0.5)
+                            .attr("fill", accent_color)
+                            .attr("opacity", 0.7);
+                        display.append("text")
+                            .attr("x", info_svg_width_start + 2 * mini_offset + 3 * display_offset + words_shared_scale(words_shared_number[current_index]))
+                            .attr("y", current_y + display_offset)
+                            .text(words_shared_number[current_index])
+                            .attr("text-anchor", "start")
+                            .attr("font-family", 'Roboto')
+                            .attr("font-size", "14px")
+                            .attr("fill", text_color)
+                            .attr("opacity", 0.5);
+                        current_y += display_offset;
+                        current_index += 1;
+                    }
+
+
+                }
+            } else {
+                display.remove();
+            }
+
+        }
+
+        var mouseoverLinkData;
+
+        function mouseoverLink(d, show) {
+            if (show) {
+                mouseoverLinkData = graph_svg.append("g");
+
+                //title1
+                mouseoverLinkData.append("text")
+                    .attr("x", info_svg_width_start + 3 * display_offset)
+                    .attr("y", display_offset * 2)
+                    .text(d.source.Title)
+                    .attr("text-transform", "capitalize")
+                    .attr("font-family", 'Raleway')
+                    .attr("font-size", "30px")
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
+
+                //artist1
+                mouseoverLinkData.append("text")
+                    .attr("x", info_svg_width_start + 3 * display_offset)
+                    .attr("y", display_offset * 3)
+                    .text(d.source.Artist)
+                    .attr("text-transform", "capitalize")
+                    .attr("font-family", 'Roboto')
+                    .attr("font-size", "15px")
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
+
+                //rank1
+                mouseoverLinkData.append("text")
+                    .attr("x", info_svg_width_start + 1.5 * display_offset)
+                    .attr("y", display_offset * 2)
+                    .text("#" + d.source.Rank)
+                    .attr("text-anchor", "middle")
+                    .attr("font-family", 'Roboto')
+                    .attr("font-size", "20px")
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
+
+                //title2
+                mouseoverLinkData.append("text")
+                    .attr("x", info_svg_width_start + 3 * display_offset)
+                    .attr("y", display_offset * 5)
+                    .text(d.target.Title)
+                    .attr("text-transform", "capitalize")
+                    .attr("font-family", 'Raleway')
+                    .attr("font-size", "30px")
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
+
+                //artist2
+                mouseoverLinkData.append("text")
+                    .attr("x", info_svg_width_start + 3 * display_offset)
+                    .attr("y", display_offset * 6)
+                    .text(d.target.Artist)
+                    .attr("text-transform", "capitalize")
+                    .attr("font-family", 'Roboto')
+                    .attr("font-size", "15px")
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
+
+                //rank2
+                mouseoverLinkData.append("text")
+                    .attr("x", info_svg_width_start + 1.5 * display_offset)
+                    .attr("y", display_offset * 5)
+                    .text("#" + d.target.Rank)
+                    .attr("text-anchor", "middle")
+                    .attr("font-family", 'Roboto')
+                    .attr("font-size", "20px")
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
+
+                //similarity
+                var similarity = "No lyrics found";
+                var words_common = 0;
+                if (d.source.TotalWords != 0 && d.target.TotalWords != 0) {
+                    avg_words = (d.source.TotalWords + d.target.TotalWords) / 2;
+                    words_shared_info = getSimilarities(d.source.Lyrics, d.target.Lyrics);
+
+                    words_shared = [];
+                    words_shared_number = [];
+                    words_shared_info.forEach(function(element) {
+                        words_shared.push(element[0]);
+                        words_shared_number.push(element[1]);
+                    });
+
+
+                    words_common = words_shared.length;
+                    similarity = (words_common / avg_words * 100).toFixed(2) + "% lyrically similar";
+                }
+                mouseoverLinkData.append("text")
+                    .attr("x", info_svg_width_start + 3 * display_offset)
+                    .attr("y", display_offset * 8)
+                    .text(similarity)
+                    .attr("font-family", 'Roboto')
+                    .attr("font-size", "20px")
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
+
+                //words in common, average words
+                if (similarity != "No lyrics found") {
+                    mouseoverLinkData.append("text")
+                        .attr("x", info_svg_width_start + 3 * display_offset)
+                        .attr("y", display_offset * 9)
+                        .text(words_common + " words in common")
+                        .attr("font-family", 'Roboto')
+                        .attr("font-size", "16px")
+                        .attr("fill", text_color)
+                        .attr("opacity", 0.8);
+
+                    mouseoverLinkData.append("text")
+                        .attr("x", info_svg_width_start + 3 * display_offset)
+                        .attr("y", display_offset * 10)
+                        .text(avg_words + " total words, average")
+                        .attr("font-family", 'Roboto')
+                        .attr("font-size", "16px")
+                        .attr("fill", text_color)
+                        .attr("opacity", 0.8);
+
+                    mouseoverLinkData.append("text")
+                        .attr("x", info_svg_width_start + 3 * display_offset)
+                        .attr("y", display_offset * 12)
+                        .text("words in common:")
+                        .attr("font-family", 'Roboto')
+                        .attr("font-size", "20px")
+                        .attr("fill", text_color)
+                        .attr("opacity", 0.8);
+
+                    current_index = 0;
+                    current_y = display_offset * 12;
+
+                    words_shared_scale = d3.scaleLinear()
+                        .domain([0, Math.max(...words_shared_number)])
+                        .range([0, info_svg_width - 6 * display_offset])
+                        .clamp(true);
+
+                    var mini_offset = 5;
+                    while (current_y < info_svg_height - display_offset * 2 && current_index < words_shared.length) {
+                        mouseoverLinkData.append("text")
+                            .attr("x", info_svg_width_start + 3 * display_offset)
+                            .attr("y", current_y + display_offset)
+                            .text(words_shared[current_index])
+                            .attr("text-anchor", "end")
+                            .attr("font-family", 'Roboto')
+                            .attr("font-size", "16px")
+                            .attr("fill", text_color)
+                            .attr("opacity", 0.8);
+                        mouseoverLinkData.append("rect")
+                            .attr("x", info_svg_width_start + mini_offset + 3 * display_offset)
+                            .attr("y", current_y + display_offset * 0.5)
+                            .attr("width", words_shared_scale(words_shared_number[current_index]))
+                            .attr("height", display_offset * 0.5)
+                            .attr("fill", accent_color)
+                            .attr("opacity", 0.7);
+                        mouseoverLinkData.append("text")
+                            .attr("x", info_svg_width_start + 2 * mini_offset + 3 * display_offset + words_shared_scale(words_shared_number[current_index]))
+                            .attr("y", current_y + display_offset)
+                            .text(words_shared_number[current_index])
+                            .attr("text-anchor", "start")
+                            .attr("font-family", 'Roboto')
+                            .attr("font-size", "14px")
+                            .attr("fill", text_color)
+                            .attr("opacity", 0.5);
+                        current_y += display_offset;
+                        current_index += 1;
+                    }
+                }
+            } else {
+                mouseoverLinkData.remove();
+            }
+
+        }
+
+    </script>
 
 </body>
+
 </html>
