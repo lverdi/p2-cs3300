@@ -16,9 +16,9 @@
             src: url("fonts/Roboto-Medium.ttf")
         }
 
-        /*
- * { transition: all ease-in-out 550ms; }
-*/
+        * {
+            transition: all ease-in-out 50ms;
+        }
 
         body {
             background-color: #25274D;
@@ -602,7 +602,7 @@
 
         var graph_svg_width = d3.select("#main")._groups[0][0].clientWidth;
         var graph_svg_height = 800;
-        var text_color = "slate grey";
+        var text_color = "white";
         var accent_color = "#2E9CCA";
 
         var graph_svg = d3.select("#main2").append("svg")
@@ -614,6 +614,26 @@
             .attr("height", graph_svg_height)
             .attr("fill", "white")
             .attr("opacity", 0.2);
+        graph_svg.append("text")
+            .attr("x", 20)
+            .attr("y", 50)
+            .text("lyric similarity graph")
+            .attr("alignment-baseline", "middle")
+            .attr("font-family", 'Roboto')
+            .attr("font-size", "50px")
+            .attr("fill", "white")
+            .attr("opacity", 0.8);
+        graph_svg.append("text")
+            .attr("x", 20)
+            .attr("y", 90)
+            .text("hover over nodes and edges to see song information")
+            .attr("alignment-baseline", "middle")
+            .attr("font-family", 'Roboto')
+            .attr("font-size", "24px")
+            .attr("fill", "white")
+            .attr("opacity", 0.8);
+
+
 
         var info_svg_width = 400;
         var info_svg_width_start = graph_svg_width - info_svg_width;
@@ -624,7 +644,78 @@
             .attr("width", info_svg_width)
             .attr("height", info_svg_height)
             .attr("fill", "white")
-            .attr("opacity", 0.5);
+            .attr("opacity", 0.2);
+
+        var gradient = graph_svg.append("defs").append("linearGradient")
+            .attr("id", "svgGradient")
+            .attr("x1", "0%")
+            .attr("x2", "100%")
+            .attr("y1", "0%")
+            .attr("y2", "0%");
+
+        gradient.append("stop")
+            .attr('class', 'start')
+            .attr("offset", "0%")
+            .attr("stop-color", accent_color)
+            .attr("stop-opacity", 1);
+
+        gradient.append("stop")
+            .attr('class', 'end')
+            .attr("offset", "100%")
+            .attr("stop-color", "gray")
+            .attr("stop-opacity", 1);
+
+        var mini_offset = 60;
+        graph_svg.append("rect")
+            .attr("x", mini_offset)
+            .attr("y", graph_svg_height - 1.5 * mini_offset)
+            .attr("width", graph_svg_width - info_svg_width - 2 * mini_offset)
+            .attr("height", 0.25 * mini_offset)
+            .attr("fill", "url(#svgGradient)");
+
+        graph_svg.append("text")
+            .attr("x", mini_offset)
+            .attr("y", graph_svg_height - 0.8 * mini_offset)
+            .text("#1")
+            .attr("alignment-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("font-family", 'Roboto')
+            .attr("font-size", "20px")
+            .attr("fill", "white")
+            .attr("opacity", 0.8);
+
+        graph_svg.append("text")
+            .attr("x", mini_offset)
+            .attr("y", graph_svg_height - 0.5 * mini_offset)
+            .text("(more popular)")
+            .attr("alignment-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("font-family", 'Roboto')
+            .attr("font-size", "15px")
+            .attr("fill", "white")
+            .attr("opacity", 0.8);
+
+        graph_svg.append("text")
+            .attr("x", graph_svg_width - info_svg_width - mini_offset)
+            .attr("y", graph_svg_height - 0.8 * mini_offset)
+            .text("#100")
+            .attr("alignment-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("font-family", 'Roboto')
+            .attr("font-size", "20px")
+            .attr("fill", "white")
+            .attr("opacity", 0.8);
+
+        graph_svg.append("text")
+            .attr("x", graph_svg_width - info_svg_width - mini_offset)
+            .attr("y", graph_svg_height - 0.5 * mini_offset)
+            .text("(less popular)")
+            .attr("alignment-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("font-family", 'Roboto')
+            .attr("font-size", "15px")
+            .attr("fill", "white")
+            .attr("opacity", 0.8);
 
         function parseNode(line) {
             return {
@@ -820,7 +911,8 @@
 
             simulation
                 .nodes(song_data)
-                .on("tick", ticked);
+                .on("tick", ticked)
+                .on("tick", tickActions);
 
             simulation.force("link")
                 .links(overlap_top);
@@ -848,6 +940,33 @@
                     })
                     .attr("cy", function(d) {
                         return d.y;
+                    });
+            }
+
+            var constraint_radius = 100;
+
+            function tickActions() {
+                //constrains the nodes to be within a box
+                node
+                    .attr("cx", function(d) {
+                        return d.x = Math.max(constraint_radius, Math.min(info_svg_width_start - constraint_radius, d.x));
+                    })
+                    .attr("cy", function(d) {
+                        return d.y = Math.max(constraint_radius, Math.min(info_svg_height - constraint_radius, d.y));
+                    });
+
+                link
+                    .attr("x1", function(d) {
+                        return d.source.x;
+                    })
+                    .attr("y1", function(d) {
+                        return d.source.y;
+                    })
+                    .attr("x2", function(d) {
+                        return d.target.x;
+                    })
+                    .attr("y2", function(d) {
+                        return d.target.y;
                     });
             }
         }
@@ -984,7 +1103,8 @@
                         .text("word frequency:")
                         .attr("font-family", 'Roboto')
                         .attr("font-size", "20px")
-                        .attr("fill", text_color);
+                        .attr("fill", text_color)
+                        .attr("opacity", 0.8);
 
                     current_index = 0;
                     current_y = display_offset * 9;
@@ -997,7 +1117,7 @@
                     var mini_offset = 5;
                     while (current_y < info_svg_height - display_offset * 2 && current_index < words_shared.length) {
                         display.append("text")
-                            .attr("x", info_svg_width_start + 3 * display_offset)
+                            .attr("x", info_svg_width_start + 4 * display_offset)
                             .attr("y", current_y + display_offset)
                             .text(words_shared[current_index])
                             .attr("text-anchor", "end")
@@ -1006,14 +1126,14 @@
                             .attr("fill", text_color)
                             .attr("opacity", 0.8);
                         display.append("rect")
-                            .attr("x", info_svg_width_start + mini_offset + 3 * display_offset)
+                            .attr("x", info_svg_width_start + mini_offset + 4 * display_offset)
                             .attr("y", current_y + display_offset * 0.5)
                             .attr("width", words_shared_scale(words_shared_number[current_index]))
                             .attr("height", display_offset * 0.5)
                             .attr("fill", accent_color)
                             .attr("opacity", 0.7);
                         display.append("text")
-                            .attr("x", info_svg_width_start + 2 * mini_offset + 3 * display_offset + words_shared_scale(words_shared_number[current_index]))
+                            .attr("x", info_svg_width_start + 2 * mini_offset + 4 * display_offset + words_shared_scale(words_shared_number[current_index]))
                             .attr("y", current_y + display_offset)
                             .text(words_shared_number[current_index])
                             .attr("text-anchor", "start")
@@ -1172,7 +1292,7 @@
                     var mini_offset = 5;
                     while (current_y < info_svg_height - display_offset * 2 && current_index < words_shared.length) {
                         mouseoverLinkData.append("text")
-                            .attr("x", info_svg_width_start + 3 * display_offset)
+                            .attr("x", info_svg_width_start + 4 * display_offset)
                             .attr("y", current_y + display_offset)
                             .text(words_shared[current_index])
                             .attr("text-anchor", "end")
@@ -1181,14 +1301,14 @@
                             .attr("fill", text_color)
                             .attr("opacity", 0.8);
                         mouseoverLinkData.append("rect")
-                            .attr("x", info_svg_width_start + mini_offset + 3 * display_offset)
+                            .attr("x", info_svg_width_start + mini_offset + 4 * display_offset)
                             .attr("y", current_y + display_offset * 0.5)
                             .attr("width", words_shared_scale(words_shared_number[current_index]))
                             .attr("height", display_offset * 0.5)
                             .attr("fill", accent_color)
                             .attr("opacity", 0.7);
                         mouseoverLinkData.append("text")
-                            .attr("x", info_svg_width_start + 2 * mini_offset + 3 * display_offset + words_shared_scale(words_shared_number[current_index]))
+                            .attr("x", info_svg_width_start + 2 * mini_offset + 4 * display_offset + words_shared_scale(words_shared_number[current_index]))
                             .attr("y", current_y + display_offset)
                             .text(words_shared_number[current_index])
                             .attr("text-anchor", "start")
