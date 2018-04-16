@@ -78,7 +78,7 @@
 
     <script>
         var graph_svg_width = 1200;
-        var graph_svg_height = 800;
+        var graph_svg_height = 1000;
 
         var graph_svg = d3.select("#main").append("svg")
             .attr("width", graph_svg_width)
@@ -335,8 +335,6 @@
                 .attr("font-family", 'Roboto')
                 .attr("font-size", "15px")
                 .attr("fill", "transparent");
-
-            console.log(link);
         }
 
         function mouseoutNode(d) {
@@ -423,7 +421,7 @@
                     display.append("text")
                         .attr("x", info_svg_width_start + 3 * display_offset)
                         .attr("y", display_offset * 9)
-                        .text("words in common:")
+                        .text("word frequency:")
                         .attr("font-family", 'Roboto')
                         .attr("font-size", "20px")
                         .attr("fill", "black");
@@ -432,7 +430,7 @@
                     current_y = display_offset * 9;
 
                     words_shared_scale = d3.scaleLinear()
-                        .domain(d3.extent(words_shared_number))
+                        .domain([0, Math.max(...words_shared_number)])
                         .range([0, info_svg_width - 6 * display_offset])
                         .clamp(true);
 
@@ -599,7 +597,7 @@
                     current_y = display_offset * 12;
 
                     words_shared_scale = d3.scaleLinear()
-                        .domain(d3.extent(words_shared_number))
+                        .domain([0, Math.max(...words_shared_number)])
                         .range([0, info_svg_width - 6 * display_offset])
                         .clamp(true);
 
