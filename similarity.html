@@ -9,8 +9,9 @@
         @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,700,900');
 
         body {
-            background-color: #C6F1E7;
+            background-color: #25274D;
             font-family: 'Raleway', sans-serif;
+            color: #AAABB8;
         }
 
         h1 {
@@ -19,7 +20,7 @@
             font-size: 4em;
             margin: 0px;
             margin-bottom: 10px;
-            color: darkslategray;
+            color: white;
         }
 
         p {
@@ -29,10 +30,6 @@
             font-size: 2em;
             margin: 0px;
             margin-bottom: 5px;
-            color: darkslategray;
-        }
-
-        #trend {
             color: white;
         }
 
@@ -42,6 +39,18 @@
             height: auto;
             margin: auto;
 
+        }
+
+        #yearDisplay {
+            color: #AAABB8;
+            font-size: 24px;
+            margin-left: 46%;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        #yearDisplay span {
+            color: #2E9CCA;
+            font-size: 32px;
         }
 
         .links line {
@@ -60,6 +69,42 @@
             width: 1200px;
         }
 
+        .slidecontainer {
+            width: 100%;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            height: 25px;
+            background: #29648A;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            border-radius: 25px;
+            width: 25px;
+            height: 25px;
+            background: #38c4ff;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            border-radius: 25px;
+            width: 25px;
+            height: 25px;
+            background: #38c4ff;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 
@@ -69,6 +114,16 @@
         <p>Compare the lyrical similarity of the yearly Billboard Hot 100 Songs.</p>
         <br>
         <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="toolbar">
+            <h3 id="yearDisplay"> Year: <span>2017</span></h3>
+        </div>
+        <div class="slidercontainter" align="center">
+            <input class="slider" id="slider2" type="range" min="0" max="52" value="52" />
+        </div>
     </div>
     <div class="main" id="main">
     </div>
@@ -78,7 +133,9 @@
 
     <script>
         var graph_svg_width = 1200;
-        var graph_svg_height = 1000;
+        var graph_svg_height = 800;
+        var text_color = "white";
+        var accent_color = "#2E9CCA";
 
         var graph_svg = d3.select("#main").append("svg")
             .attr("id", "graph")
@@ -163,6 +220,22 @@
             return sharedWords;
         }
 
+        document.getElementById("slider2").style.width = graph_svg_width;
+
+        var slider2 = document.getElementById("slider2");
+        slider2.oninput = function() {
+            total = parseInt(slider2.value) + 1965;
+            currentYear = (total).toString();
+            document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
+            graphPoints(total);
+        };
+        slider2.onchange = function() {
+            total = parseInt(slider2.value) + 1965;
+            currentYear = (total).toString();
+            document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
+        };
+
+
         var song_data_all; //stores song data
         var overlap_top_all; //stores overlap data; preprocessed in python
 
@@ -215,7 +288,7 @@
             function colorScale(rank) {
                 var internalColorScale = d3.scaleLinear()
                     .domain(d3.extent(totalRankArray))
-                    .range(["orange", "gray"])
+                    .range([accent_color, "gray"])
                     .clamp(true);
                 return internalColorScale(rank);
             }
@@ -372,7 +445,8 @@
                     .attr("text-transform", "capitalize")
                     .attr("font-family", 'Raleway')
                     .attr("font-size", "30px")
-                    .attr("fill", "black");
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
 
                 //artist
                 display.append("text")
@@ -382,7 +456,8 @@
                     .attr("text-transform", "capitalize")
                     .attr("font-family", 'Roboto')
                     .attr("font-size", "15px")
-                    .attr("fill", "black");
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
 
                 //rank
                 display.append("text")
@@ -392,7 +467,8 @@
                     .attr("text-anchor", "middle")
                     .attr("font-family", 'Roboto')
                     .attr("font-size", "20px")
-                    .attr("fill", "gray");
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
 
                 //uniqueness
                 var uniqueness = "No lyrics found"
@@ -414,7 +490,8 @@
                     .text(uniqueness)
                     .attr("font-family", 'Roboto')
                     .attr("font-size", "20px")
-                    .attr("fill", "black");
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
 
                 //unique words, total words
                 if (uniqueness != "No lyrics found") {
@@ -424,7 +501,7 @@
                         .text(d.UniqueWords + " unique words")
                         .attr("font-family", 'Roboto')
                         .attr("font-size", "16px")
-                        .attr("fill", "black")
+                        .attr("fill", text_color)
                         .attr("opacity", 0.8);
                     display.append("text")
                         .attr("x", info_svg_width_start + 3 * display_offset)
@@ -432,7 +509,7 @@
                         .text(d.TotalWords + " total words")
                         .attr("font-family", 'Roboto')
                         .attr("font-size", "16px")
-                        .attr("fill", "black")
+                        .attr("fill", text_color)
                         .attr("opacity", 0.8);
                     display.append("text")
                         .attr("x", info_svg_width_start + 3 * display_offset)
@@ -440,7 +517,7 @@
                         .text("word frequency:")
                         .attr("font-family", 'Roboto')
                         .attr("font-size", "20px")
-                        .attr("fill", "black");
+                        .attr("fill", text_color);
 
                     current_index = 0;
                     current_y = display_offset * 9;
@@ -459,14 +536,14 @@
                             .attr("text-anchor", "end")
                             .attr("font-family", 'Roboto')
                             .attr("font-size", "16px")
-                            .attr("fill", "black")
+                            .attr("fill", text_color)
                             .attr("opacity", 0.8);
                         display.append("rect")
                             .attr("x", info_svg_width_start + mini_offset + 3 * display_offset)
                             .attr("y", current_y + display_offset * 0.5)
                             .attr("width", words_shared_scale(words_shared_number[current_index]))
                             .attr("height", display_offset * 0.5)
-                            .attr("fill", "orange")
+                            .attr("fill", accent_color)
                             .attr("opacity", 0.7);
                         display.append("text")
                             .attr("x", info_svg_width_start + 2 * mini_offset + 3 * display_offset + words_shared_scale(words_shared_number[current_index]))
@@ -475,7 +552,7 @@
                             .attr("text-anchor", "start")
                             .attr("font-family", 'Roboto')
                             .attr("font-size", "14px")
-                            .attr("fill", "gray")
+                            .attr("fill", text_color)
                             .attr("opacity", 0.5);
                         current_y += display_offset;
                         current_index += 1;
@@ -503,7 +580,8 @@
                     .attr("text-transform", "capitalize")
                     .attr("font-family", 'Raleway')
                     .attr("font-size", "30px")
-                    .attr("fill", "black");
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
 
                 //artist1
                 mouseoverLinkData.append("text")
@@ -513,7 +591,8 @@
                     .attr("text-transform", "capitalize")
                     .attr("font-family", 'Roboto')
                     .attr("font-size", "15px")
-                    .attr("fill", "black");
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
 
                 //rank1
                 mouseoverLinkData.append("text")
@@ -523,7 +602,8 @@
                     .attr("text-anchor", "middle")
                     .attr("font-family", 'Roboto')
                     .attr("font-size", "20px")
-                    .attr("fill", "gray");
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
 
                 //title2
                 mouseoverLinkData.append("text")
@@ -533,7 +613,8 @@
                     .attr("text-transform", "capitalize")
                     .attr("font-family", 'Raleway')
                     .attr("font-size", "30px")
-                    .attr("fill", "black");
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
 
                 //artist2
                 mouseoverLinkData.append("text")
@@ -543,7 +624,8 @@
                     .attr("text-transform", "capitalize")
                     .attr("font-family", 'Roboto')
                     .attr("font-size", "15px")
-                    .attr("fill", "black");
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
 
                 //rank2
                 mouseoverLinkData.append("text")
@@ -553,7 +635,8 @@
                     .attr("text-anchor", "middle")
                     .attr("font-family", 'Roboto')
                     .attr("font-size", "20px")
-                    .attr("fill", "gray");
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
 
                 //similarity
                 var similarity = "No lyrics found";
@@ -579,7 +662,8 @@
                     .text(similarity)
                     .attr("font-family", 'Roboto')
                     .attr("font-size", "20px")
-                    .attr("fill", "black");
+                    .attr("fill", text_color)
+                    .attr("opacity", 0.8);
 
                 //words in common, average words
                 if (similarity != "No lyrics found") {
@@ -589,7 +673,7 @@
                         .text(words_common + " words in common")
                         .attr("font-family", 'Roboto')
                         .attr("font-size", "16px")
-                        .attr("fill", "black")
+                        .attr("fill", text_color)
                         .attr("opacity", 0.8);
 
                     mouseoverLinkData.append("text")
@@ -598,7 +682,7 @@
                         .text(avg_words + " total words, average")
                         .attr("font-family", 'Roboto')
                         .attr("font-size", "16px")
-                        .attr("fill", "black")
+                        .attr("fill", text_color)
                         .attr("opacity", 0.8);
 
                     mouseoverLinkData.append("text")
@@ -607,7 +691,8 @@
                         .text("words in common:")
                         .attr("font-family", 'Roboto')
                         .attr("font-size", "20px")
-                        .attr("fill", "black");
+                        .attr("fill", text_color)
+                        .attr("opacity", 0.8);
 
                     current_index = 0;
                     current_y = display_offset * 12;
@@ -626,14 +711,14 @@
                             .attr("text-anchor", "end")
                             .attr("font-family", 'Roboto')
                             .attr("font-size", "16px")
-                            .attr("fill", "black")
+                            .attr("fill", text_color)
                             .attr("opacity", 0.8);
                         mouseoverLinkData.append("rect")
                             .attr("x", info_svg_width_start + mini_offset + 3 * display_offset)
                             .attr("y", current_y + display_offset * 0.5)
                             .attr("width", words_shared_scale(words_shared_number[current_index]))
                             .attr("height", display_offset * 0.5)
-                            .attr("fill", "orange")
+                            .attr("fill", accent_color)
                             .attr("opacity", 0.7);
                         mouseoverLinkData.append("text")
                             .attr("x", info_svg_width_start + 2 * mini_offset + 3 * display_offset + words_shared_scale(words_shared_number[current_index]))
@@ -642,7 +727,7 @@
                             .attr("text-anchor", "start")
                             .attr("font-family", 'Roboto')
                             .attr("font-size", "14px")
-                            .attr("fill", "gray")
+                            .attr("fill", text_color)
                             .attr("opacity", 0.5);
                         current_y += display_offset;
                         current_index += 1;
