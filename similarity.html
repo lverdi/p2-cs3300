@@ -59,7 +59,6 @@
             text-align: left;
             width: 1200px;
         }
-
     </style>
 </head>
 
@@ -81,6 +80,7 @@
         var graph_svg_height = 1000;
 
         var graph_svg = d3.select("#main").append("svg")
+            .attr("id", "graph")
             .attr("width", graph_svg_width)
             .attr("height", graph_svg_height)
         graph_svg.append("rect")
@@ -114,6 +114,7 @@
 
         function parseLink(line) {
             return {
+                year: parseInt(line["Year"]),
                 source: parseInt(line["Start"]),
                 target: parseInt(line["End"]),
             };
@@ -161,140 +162,155 @@
             return sharedWords;
         }
 
-        var separationForce = 100;
-        var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink())
-            .force("charge", d3.forceManyBody().strength(-separationForce))
-            .force("center", d3.forceCenter(graph_svg_width / 3, graph_svg_height / 1.7));
-
-
-        var song_data; //stores song data
-        var overlap_top; //stores overlap data; preprocessed in python
+        var song_data_all; //stores song data
+        var overlap_top_all; //stores overlap data; preprocessed in python
 
         var node; //stores all nodes
         var link; //stores all links
 
         d3.queue()
-            .defer(d3.csv, "song_data.csv", parseNode)
+            .defer(d3.csv, "billboard_lyrics_1964-2017.csv", parseNode)
             .defer(d3.csv, "overlap_top.csv", parseLink)
             .await(function(error, data1, data2) {
-                song_data = data1;
-                overlap_top = data2;
-
-                var totalWordArray = [];
-                for (var i = 0; i < song_data.length; i++) {
-                    if (song_data[i].TotalWords != 0) {
-                        totalWordArray.push(song_data[i].TotalWords);
-                    }
-                }
-
-                var smallest_word_size = 6;
-                var largest_word_size = 12;
-                var wordSizeScale = d3.scaleLinear()
-                    .domain(d3.extent(totalWordArray))
-                    .range([smallest_word_size, largest_word_size])
-                    .clamp(true);
-
-                var totalRankArray = [];
-                for (var i = 0; i < song_data.length; i++) {
-                    totalRankArray.push(song_data[i].Rank);
-                }
-
-                function colorScale(rank) {
-                    var internalColorScale = d3.scaleLinear()
-                        .domain(d3.extent(totalRankArray))
-                        .range(["orange", "gray"])
-                        .clamp(true);
-                    return internalColorScale(rank);
-                }
-
-                var link_width = 1;
-                var link_select_width = 10;
-
-                link = graph_svg.append("g")
-                    .attr("class", "links")
-                    .selectAll("line")
-                    .data(overlap_top)
-                    .enter().append("line")
-                    .attr('stroke', 'black')
-                    .attr("stroke-width", link_width)
-                    .on("mouseover", function(d) {
-                        d3.select(this)
-                            .attr("stroke-width", link_select_width)
-                        mouseoverLink(d, true);
-                    })
-                    .on("mouseout", function(d) {
-                        d3.select(this)
-                            .attr("stroke-width", link_width)
-                        mouseoverLink(d, false)
-                    });
-
-                var node_r = 8;
-
-                node = graph_svg.append("g")
-                    .attr("class", "nodes")
-                    .selectAll("circle")
-                    .data(song_data)
-                    .enter().append("circle")
-                    .attr("r", function(d) {
-                        return wordSizeScale(d.TotalWords)
-                    })
-                    .attr("fill", function(d) {
-                        return colorScale(d.Rank);
-                    })
-                    .on("mouseover", function(d) {
-
-                        d3.select(this)
-                            .attr("r", function(d) {
-                                return 2 * wordSizeScale(d.TotalWords)
-                            })
-                        displayInfo(d, true);
-                        mouseoverNode(d);
-                    })
-                    .on("mouseout", function(d) {
-                        d3.select(this)
-                            .attr("r", node_r)
-                        displayInfo(d, false);
-                        mouseoutNode(d);
-                    });
-
-
-                node.append("title")
-                    .text(function(d) {
-                        return d.id;
-                    });
-
-                simulation
-                    .nodes(song_data)
-                    .on("tick", ticked);
-
-                simulation.force("link")
-                    .links(overlap_top);
-
-                function ticked() {
-                    link
-                        .attr("x1", function(d) {
-                            return d.source.x;
-                        })
-                        .attr("y1", function(d) {
-                            return d.source.y;
-                        })
-                        .attr("x2", function(d) {
-                            return d.target.x;
-                        })
-                        .attr("y2", function(d) {
-                            return d.target.y;
-                        });
-
-                    node
-                        .attr("cx", function(d) {
-                            return d.x;
-                        })
-                        .attr("cy", function(d) {
-                            return d.y;
-                        });
-                }
+                song_data_all = data1;
+                overlap_top_all = data2;
+                graphPoints(data1[0].Year);
             });
+
+        function graphPoints(year) {
+            node = {};
+            link = {};
+            d3.select("#nodes").remove();
+            d3.select("#links").remove();
+
+            var song_data = song_data_all.filter(song => song.Year == year);
+            var overlap_top = overlap_top_all.filter(connection => connection.year == year);
+
+            var separationForce = 100;
+            var simulation = d3.forceSimulation()
+                .force("link", d3.forceLink())
+                .force("charge", d3.forceManyBody().strength(-separationForce))
+                .force("center", d3.forceCenter(graph_svg_width / 3, graph_svg_height / 1.7));
+
+            var totalWordArray = [];
+            for (var i = 0; i < song_data.length; i++) {
+                if (song_data[i].TotalWords != 0) {
+                    totalWordArray.push(song_data[i].TotalWords);
+                }
+            }
+
+            var smallest_word_size = 6;
+            var largest_word_size = 12;
+            var wordSizeScale = d3.scaleSqrt()
+                .domain(d3.extent(totalWordArray))
+                .range([smallest_word_size, largest_word_size])
+                .clamp(true);
+
+            var totalRankArray = [];
+            for (var i = 0; i < song_data.length; i++) {
+                totalRankArray.push(song_data[i].Rank);
+            }
+
+            function colorScale(rank) {
+                var internalColorScale = d3.scaleLinear()
+                    .domain(d3.extent(totalRankArray))
+                    .range(["orange", "gray"])
+                    .clamp(true);
+                return internalColorScale(rank);
+            }
+
+            var link_width = 1;
+            var link_select_width = 10;
+
+            link = graph_svg.append("g")
+                .attr("id", "links")
+                .attr("class", "links")
+                .selectAll("line")
+                .data(overlap_top)
+                .enter().append("line")
+                .attr('stroke', 'black')
+                .attr("stroke-width", link_width)
+                .on("mouseover", function(d) {
+                    d3.select(this)
+                        .attr("stroke-width", link_select_width)
+                    mouseoverLink(d, true);
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this)
+                        .attr("stroke-width", link_width)
+                    mouseoverLink(d, false)
+                });
+
+            var node_r = 8;
+
+            node = graph_svg.append("g")
+                .attr("id", "nodes")
+                .attr("class", "nodes")
+                .selectAll("circle")
+                .data(song_data)
+                .enter().append("circle")
+                .attr("r", function(d) {
+                    return wordSizeScale(d.TotalWords)
+                })
+                .attr("fill", function(d) {
+                    return colorScale(d.Rank);
+                })
+                .on("mouseover", function(d) {
+
+                    d3.select(this)
+                        .attr("r", function(d) {
+                            return 2 * wordSizeScale(d.TotalWords)
+                        })
+                    displayInfo(d, true);
+                    mouseoverNode(d);
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this)
+                        .attr("r", node_r)
+                    displayInfo(d, false);
+                    mouseoutNode(d);
+                });
+
+
+            node.append("title")
+                .text(function(d) {
+                    return d.id;
+                });
+
+            simulation
+                .nodes(song_data)
+                .on("tick", ticked);
+            console.log(song_data.length)
+
+            simulation.force("link")
+                .links(overlap_top);
+
+            simulation.restart();
+
+            function ticked() {
+                link
+                    .attr("x1", function(d) {
+                        return d.source.x;
+                    })
+                    .attr("y1", function(d) {
+                        return d.source.y;
+                    })
+                    .attr("x2", function(d) {
+                        return d.target.x;
+                    })
+                    .attr("y2", function(d) {
+                        return d.target.y;
+                    });
+
+                node
+                    .attr("cx", function(d) {
+                        return d.x;
+                    })
+                    .attr("cy", function(d) {
+                        return d.y;
+                    });
+            }
+        }
 
         var mouseoverInfo;
 
@@ -637,7 +653,6 @@
             }
 
         }
-
     </script>
 
 </body>
