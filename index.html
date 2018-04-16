@@ -103,7 +103,6 @@ circle {
 
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    appearance: none;
     border-radius:25px;
     width: 25px;
     height: 25px;
@@ -227,7 +226,7 @@ circle {
 
   var rScaleTiers = d3.scaleLinear()
   .domain([1, 70])
-  .range([5, 10]);
+  .range([4.5, 8.5]);
 
   var fillScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5]).range(["#FEFFFF", "#090977", "#9f0aad", "#ff269c", "#05b27b", "#f73636"]);
   var inverseFillScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5]).range(["#090977", "#FEFFFF", "#FEFFFF", "#FEFFFF", "#FEFFFF", "#FEFFFF"]);
@@ -391,6 +390,7 @@ circle {
         "rank": s.Rank,
         "total": totalRatio,
         "totalInTop": totalInTop,
+        "wordCount": totalWords,
         "unique": uniqueRatio,
         "title": s.Title,
         "artist": s.Artist,
@@ -450,13 +450,28 @@ circle {
       .style("fill", "#AAABB8")
       .style("font-size", "32px");
 
+
       infosvg.append("text")
       .attr("text-anchor", "middle")
       .attr("x", infoWidth / 2)
-      .attr("y", infoHeight * 3 / 11)
+      .attr("y", infoHeight * 3 / 12)
       .text("% unique")
       .style("fill", "#AAABB8")
       .style("font-size", "28px");
+
+      console.log(selected);
+      console.log(selected.tiers);
+
+
+      printSongInfo(infosvg, "Word Count ", selected.wordCount, "#38C4FF", 4/12);
+      printSongInfo(infosvg, "Top #1-100 ", selected.tiers[0], "#FEFFFF", 5/12);
+      printSongInfo(infosvg, "Top #101-200 ", selected.tiers[1], "#090977", 6/12);
+      printSongInfo(infosvg, "Top #201-300 ", selected.tiers[2], "#9f0aad", 7/12);
+      printSongInfo(infosvg, "Top #301-400 ", selected.tiers[3], "#ff269c", 8/12);
+      printSongInfo(infosvg, "Top #401-500 ", selected.tiers[4], "#05b27b", 9/12);
+      printSongInfo(infosvg, "Top #501+ ", selected.tiers[5], "#f73636", 10/12);
+
+
 
       var radius = infoHeight * 0.25;
       var donutWidth = radius / 2;
@@ -518,6 +533,7 @@ circle {
                     d3.select("#info").style("background-color", fillScale(d.index));
                   }
                   d3.selectAll("#info text").style("fill", inverseFillScale(d.index));
+                  d3.selectAll("#info tspan").style("fill", inverseFillScale(d.index));
                 });
     });
 
@@ -537,6 +553,21 @@ circle {
     updateDisplay();
     mainsvg.select("#loading").style("opacity", "0");
     mainsvg.selectAll(".mainAxis").style("opacity", "1");
+  }
+
+  function printSongInfo (svg, str1, str2, color, pos) {
+    svg.append("text")
+    .attr("text-anchor", "end")
+    .attr("x", infoWidth / 2)
+    .attr("y", infoHeight * pos)
+    .text(str1)
+    .style("fill", "#AAABB8")
+    .style("font-size", "22px")
+    .style("background-color", color)
+    .append('tspan')
+    .text(str2)
+    .style("fill", color)
+    .style("font-size", "26px");
   }
 
   function capFirstWord(str) {
