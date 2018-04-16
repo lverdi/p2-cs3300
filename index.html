@@ -11,78 +11,68 @@ url('https://fonts.googleapis.com/css?family=Raleway:300,400,700,900');
     transition: all ease-in-out 550ms;
 }
 
-body{
-  background-color: #C6F1E7;
+body {
+  background-color: #25274D;
   font-family: 'Raleway', sans-serif;
+  color: #AAABB8;
 }
 
-h1{
+h1 {
   display: inline-block;
   vertical-align: middle;
-
   font-size:5em;
 }
 
-#trendHeading{
-	color:white;
-	text-align:center;
+circle {
+  transition: opacity 600ms;
 }
 
-#trend{
-	color:white;
-}
-
-
-#title{
+#title {
   width: 80%;
   height: auto;
   margin: auto;
-
+  font-size: 20px;
 }
 
-#marriage, #main{
+#yearDisplay {
+  color: #AAABB8;
+  font-size: 24px;
+  margin-left: 46%;
+}
 
- 	padding: 1em;
- 	border: solid 1px;
- 	display: inline-block;
- 	margin: 0 auto;
- 	background-color:black;
+#yearDisplay span {
+  color: #2E9CCA;
+  font-size: 32px;
+}
+
+#searchBar {
+  margin-left: 25%;
+  height: 40px;
+  width: 10%;
+  background: #AAABB8;
+  font-size: 20px;
+  font-family: 'Raleway', sans-serif;
+  border: none;
+  padding-left: 5px;
 }
 
 #main {
-  background-color: rgb(255, 255, 255, 0.5);
-  border: none;
-}
-
-#info{
-
  	padding: 1em;
- 	border: solid 1px;
- 	background-color:black;
+  border: none;
+ 	display: inline-block;
+ 	margin: 0 auto;
+  background-color: #464866;
 }
 
-#two{
-	display: inline-block;
-
-	width:460px;
-	height:500px;
-	vertical-align:top;
-}
-
-.yaxis line{
-	stroke:red;
-}
-
-.yaxis path{
-  stroke: red;
-}
-
-.yaxis text{
-  fill: red;
+.toolbar {
+  display: flex;
+  align-items: center;
 }
 
 .mainAxis {
-  font-size: 13px;
+  font-size: 15px;
+  color: white;
+  font-family: 'Raleway', sans-serif;
 }
 
 .slidecontainer {
@@ -91,9 +81,8 @@ h1{
 
 .slider {
     -webkit-appearance: none;
-    width: 94%;
     height: 25px;
-    background: black;
+    background: #29648A;
     outline: none;
     opacity: 0.7;
     -webkit-transition: .2s;
@@ -110,7 +99,7 @@ h1{
     border-radius:25px;
     width: 25px;
     height: 25px;
-    background: #00FF00 ;
+    background: #38c4ff ;
     cursor: pointer;
 }
 
@@ -118,7 +107,7 @@ h1{
     border-radius:25px;
     width: 25px;
     height: 25px;
-    background: #00FF00 ;
+    background: #38c4ff;
     cursor: pointer;
 }
 
@@ -130,13 +119,15 @@ h1{
 		<p> Analyzing lyrics in the top 100 Billboard songs and their prevalence in the top words of the English language. </p>
 	</div>
 	<div class="center" align="center">
-      <h3 id="yearDisplay"> Year: 2016</h3>
+    <div class="toolbar">
+      <h3 id="yearDisplay"> Year: <span>2017</span></h3>
+      <input id="searchBar" type="text" placeholder="Search for a word">
+    </div>
       <div class = "slidercontainter">
-
         <input class = "slider" id="slider2" type="range" min="0" max="52" value="52"/>
       </div>
 
-		<svg id="main" width='95%' height='800' align="center"></svg>
+		<svg id="main" width='90%' height='750' align="center"></svg>
 	</div>
 
 	</div>
@@ -172,7 +163,7 @@ h1{
   var graphHeight = document.getElementById("main").clientHeight;
   var graphWidth = document.getElementById("main").clientWidth;
   var axisPadding = 40;
-  var currentYear = "2016";
+  var currentYear = "2017";
   var nWords = 500;
   var points = [];
   var wordPoints = [];
@@ -181,6 +172,8 @@ h1{
   var mainsvg = d3.select("#main"),
   g = mainsvg.append("g").attr("transform", "translate(" + 0 + "," + axisPadding  + ")");
   // mainsvg.call(slider1);
+
+  document.getElementById("slider2").style.width = graphWidth;
 
   mainsvg.append("text")
   .attr("id", "SongName")
@@ -193,7 +186,9 @@ h1{
   .attr("x", graphWidth / 2)
   .attr("y", graphHeight / 2)
   .attr("text-anchor", "middle")
+  .attr("fill", "#AAABB8")
   .style("font-size", "40pt")
+  .style("opacity", "1")
   .text("Loading...");
 
   var xScaleMain = d3.scaleLinear()
@@ -201,43 +196,44 @@ h1{
   .range([axisPadding, graphWidth - axisPadding]);
 
   var yScaleMain = d3.scaleLinear()
-  .domain([0.3, 0.9])
-  .range([graphHeight - axisPadding * 2, axisPadding * 2]);
+  .domain([15, 90])
+  .range([graphHeight - axisPadding, axisPadding]);
 
   var rScaleTiers = d3.scaleLinear()
   .domain([1, 70])
   .range([3.5, 8]);
 
-  var rankFillScale = d3.scaleLinear().domain([1, 20, 40, 60, 80, 100]).range(["#9B30FF","#3399ff","#00ff7f","#ffff66","#ffa700","#ff6666"]);
-  var fillScale = d3.scaleLinear().domain([0, 2, 4, 6, 8, 9]).range(["#FF1A1A", "#ffa700", "#ffff66", "#00ff7f", "#3399ff", "#9B30FF"]);
-
+  var fillScale = d3.scaleLinear().domain([0, 2, 4, 6, 8, 9]).range(["#FEFFFF", "#3399ff", "#4d52d1", "#a647ff", "#FF008B", "#AAABB8"]);
 
   mainsvg.append("g")
-    .attr("transform", "translate(" + axisPadding / 2  + ", " + 0  + ")")
-    .attr("class", "mainAxis")
-    .style("visibility", "hidden")
-    .call(YAxis);
+  .attr("transform", "translate(" + axisPadding / 2  + ", " + 0  + ")")
+  .attr("class", "mainAxis")
+  .style("opacity", "0")
+  .call(YAxis);
 
   mainsvg.append("g")
   .attr("transform", "translate(0, " + (graphHeight - axisPadding * 2) + ")")
   .attr("class", "mainAxis")
-  .style("visibility", "hidden")
+  .style("opacity", "0")
   .call(XAxis);
 
   function XAxis(g) {
     g.call(d3.axisTop(xScaleMain));
     g.select(".domain").remove();
+    g.selectAll(".tick text")
+    .attr("fill", "#AAABB8");
   }
 
   function YAxis(g) {
     g.call(d3.axisLeft(yScaleMain));
     g.select(".domain").remove();
     g.selectAll(".tick:not(:first-of-type) line")
-    .attr("stroke", "#777")
+    .attr("stroke", "#AAABB8")
     .attr("stroke-dasharray", "3, 8")
     .attr("x1", graphWidth - axisPadding * 2)
     .attr("x2", -axisPadding / 2);
     g.selectAll(".tick text")
+    .attr("fill", "#AAABB8")
     .attr("x", 4)
     .attr("dy", -4);
   }
@@ -256,10 +252,71 @@ h1{
 
     yearData = nestedData.map(function (year) {
       var result = { Year: year.key, Songs: year.values };
-
       return result;
     });
+    showPointsForYear();
+  });
 
+  var slider2 = document.getElementById("slider2");
+      slider2.oninput = function () {
+        total = parseInt(slider2.value) + 1965;
+        currentYear = (total).toString();
+        document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
+      };
+      slider2.onchange = function () {
+        wordPoints = [];
+        points = [];
+        d3.selectAll("circle").remove();
+
+        total = parseInt(slider2.value) + 1965;
+        currentYear = (total).toString();
+        document.getElementById("yearDisplay").innerHTML = "Year: <span>" + currentYear + "</span>";
+        showPointsForYear();
+      };
+
+  var search = document.getElementById("searchBar");
+      search.oninput = function () {
+        var input = search.value.toLowerCase();
+        var pts = d3.selectAll(".wordTiers");
+        var songpts = d3.selectAll(".songbubbles");
+        if (input == "") {
+          pts.style("opacity", 0.9);
+          songpts.style("opacity", 0.25);
+          songpts.style("fill", "white");
+        } else {
+          pts.style("opacity", 0.2);
+          songpts.style("opacity", 0.15);
+          songpts.style("fill", "white");
+          var searchResults = [];
+          var selectedYear = yearData.find(isYear);
+          var yearSongs = selectedYear.Songs;
+          var topNWords = topWords.slice(0, nWords);
+          for (var i = 0; i < yearSongs.length; i++) {
+            var s = yearSongs[i];
+            var songLyrics = Object.keys(s.Lyrics);
+            for (var j = 0; j < songLyrics.length; j++) {
+              var lyric = songLyrics[j];
+              if (lyric.includes(input)) {
+                document.getElementById("song" + s.Rank).style.fill = "#3399ff";
+                document.getElementById("song" + s.Rank).style.opacity = 0.8;
+                var idx = topNWords.indexOf(lyric);
+                if (idx != -1) {
+                  var tier = Math.floor(idx / 50);
+                  document.getElementById("tier" + tier + "-" + s.Rank).style.opacity = 1;
+                }
+              }
+            }
+          }
+        }
+      };
+
+  function updateDisplay() {
+    circles
+    .attr("cx", function(d) { return d.x; })
+    .attr("cy", function(d) { return d.y; });
+   }
+
+  function showPointsForYear() {
     var topNWords = topWords.slice(0, nWords);
     var selectedYear = yearData.find(isYear);
     var yearSongs = selectedYear.Songs;
@@ -276,14 +333,13 @@ h1{
         totalWords += s.Lyrics[word];
         var idx = topNWords.indexOf(word);
         if (idx != -1) {
-          tierList[Math.floor((idx - 1) / 50)] += s.Lyrics[word];
+          tierList[Math.floor(idx / 50)] += s.Lyrics[word];
           uniqueInTop++;
           totalInTop += s.Lyrics[word];
         }
       }
-
-      var uniqueRatio = uniqueInTop / uniqueWords;
-      var totalRatio = totalInTop / totalWords;
+      var uniqueRatio = 100 * uniqueInTop / uniqueWords;
+      var totalRatio = 100 * totalInTop / totalWords;
 
       for (var k = 0; k < tierList.length; k++) {
         if (tierList[k] != 0) {
@@ -301,149 +357,63 @@ h1{
       points.push({
         "rank": s.Rank,
         "total": totalRatio,
+        "totalInTop": totalInTop,
         "unique": uniqueRatio,
         "title": s.Title
       });
-
-      mainsvg.append("circle")
-      .attr("r", rScaleTiers(totalInTop + 40))
-      .attr("cx", xScaleMain(s.Rank))
-      .attr("cy", yScaleMain(totalRatio))
-      .style("fill", "black")
-      .style("opacity", 0.2);
-
     }
+
+    for (var k = 0; k < points.length; k++) {
+      var current = points[k];
+      var add = 35;
+      if (current.totalInTop <= 50) {
+        add = 80;
+      }
+      mainsvg.append("circle")
+      .attr("id", "song" + current.rank)
+      .attr("class", "songbubbles")
+      .attr("r", rScaleTiers(current.totalInTop + add))
+      .attr("cx", xScaleMain(current.rank))
+      .attr("cy", yScaleMain(Math.max(current.total, 15)))
+      .style("fill", "white")
+      .style("opacity", 0.25);
+    }
+
     circles = mainsvg.selectAll(".wordTiers").data(wordPoints).enter().append("circle")
+    .attr("id", function (d) { return "tier" + d.tier + "-" + d.rank; })
     .attr("r", function (d) { return d.r; })
     .attr("cx", function (d) { return xScaleMain(d.rank); })
-    .attr("cy", yScaleMain(0.6))
+    .attr("cy", yScaleMain(50))
     .attr("class", "wordTiers")
     .style("fill", function (d) { return fillScale(d.tier); })
     .style("opacity", 0.9)
     .on("mouseover", function (d) {
-      mainsvg.select("#SongName").text(d.title);
+      mainsvg.select("#SongName").text(titleCase(d.title));
     });
 
-    var simulation = d3.forceSimulation(wordPoints)
-    // .force('center', d3.forceCenter(d => xScaleMain(d.rank), d => yScaleMain(d.total)))
+    var simulation = d3.forceSimulation();
+    simulation
     .force("x", d3.forceX(d => xScaleMain(d.rank)).strength(1))
-    .force("y", d3.forceY(d => yScaleMain(d.total)).strength(1))
-    .force("collision", d3.forceCollide(d => d.r))
+    .force("y", d3.forceY(d => yScaleMain(Math.max(d.total, 15))).strength(1))
+    .force("collision", d3.forceCollide(d => d.r));
+
+    simulation
+    .nodes(wordPoints)
     .on("tick", updateDisplay);
 
-    for (var i = 0; i < 350; ++i) {
+    for (var i = 0; i < 15; ++i) {
       simulation.tick();
     }
-    mainsvg.select("#loading").style("display", "none");
-    mainsvg.select(".mainAxis").style("visibility", "visible");
+    updateDisplay();
+    mainsvg.select("#loading").style("opacity", "0");
+    mainsvg.selectAll(".mainAxis").style("opacity", "1");
+  }
 
-  });
-
-  var slider2 = document.getElementById("slider2");
-      slider2.onchange = function () {
-        wordPoints = [];
-      points = [];
-        console.log(2);
-        d3.selectAll("circle").remove();
-        total = parseInt(slider2.value) + 1965;
-        var topNWords = topWords.slice(0, nWords);
-
-        currentYear = (total).toString();
-        document.getElementById("yearDisplay").innerHTML = "Year: " + currentYear;
-
-
-
-    console.log(yearData);
-    var selectedYear = yearData.find(isYear);
-    var yearSongs = selectedYear.Songs;
-    for (var i = 0; i < yearSongs.length; i++) {
-      var s = yearSongs[i];
-      var tierList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      var songLyrics = Object.keys(s.Lyrics);
-      var totalWords = 0;
-      var uniqueWords = songLyrics.length;
-      var uniqueInTop = 0;
-      var totalInTop = 0;
-      for (var j = 0; j < songLyrics.length; j++) {
-        var word = songLyrics[j];
-        totalWords += s.Lyrics[word];
-        var idx = topNWords.indexOf(word);
-        if (idx != -1) {
-          tierList[Math.floor((idx - 1) / 50)] += s.Lyrics[word];
-          uniqueInTop++;
-          totalInTop += s.Lyrics[word];
-        }
-      }
-
-      var uniqueRatio = uniqueInTop / uniqueWords;
-      var totalRatio = totalInTop / totalWords;
-
-      
-      for (var k = 0; k < tierList.length; k++) {
-        if (tierList[k] != 0) {
-          wordPoints.push({
-            "rank": s.Rank,
-            "title": s.Title,
-            "r": rScaleTiers(tierList[k]),
-            "total": totalRatio,
-            "unique": uniqueRatio,
-            "tier": k
-          });
-        }
-      }
-
-      points.push({
-        "rank": s.Rank,
-        "total": totalRatio,
-        "unique": uniqueRatio,
-        "title": s.Title
-      });
-  
-
-      mainsvg.append("circle")
-      .attr("r", rScaleTiers(totalInTop + 40))
-      .attr("cx", xScaleMain(s.Rank))
-      .attr("cy", yScaleMain(totalRatio))
-      .style("fill", "black")
-      .style("opacity", 0.2);
-
-    }
-    
-    
-    circles = mainsvg.selectAll(".wordTiers").data(wordPoints).enter().append("circle")
-    .attr("r", function (d) { return d.r; })
-    .attr("cx", function (d) { return xScaleMain(d.rank); })
-    .attr("cy", yScaleMain(0.6))
-    .attr("class", "wordTiers")
-    .style("fill", function (d) { return fillScale(d.tier); })
-    .style("opacity", 0.9)
-    .on("mouseover", function (d) {
-      mainsvg.select("#SongName").text(d.title);
-    });
-
-    var simulation = d3.forceSimulation(wordPoints)
-    // .force('center', d3.forceCenter(d => xScaleMain(d.rank), d => yScaleMain(d.total)))
-    .force("x", d3.forceX(d => xScaleMain(d.rank)).strength(1))
-    .force("y", d3.forceY(d => yScaleMain(d.total)).strength(1))
-    .force("collision", d3.forceCollide(d => d.r))
-    .on("tick", updateDisplay);
-
-    for (var i = 0; i < 350; ++i) {
-      simulation.tick();
-    }
-
-
-};
-
-  updateDisplay();
-
-  function updateDisplay() {
-    circles
-    .attr("cx", function(d) { return d.x; })
-    .attr("cy", function(d) { return d.y; });
-   }
-
-
+  function titleCase(str) {
+    return str.toLowerCase().split(' ').map(function(word) {
+      return word.replace(word[0], word[0].toUpperCase());
+    }).join(' ');
+  }
 
 	</script>
 
