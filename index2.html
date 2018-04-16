@@ -139,88 +139,11 @@ h1{
 
   </div>
   <div class="center" align="center">
-     
+
   </div>
   <script>
 
-  function simpleSlider () {
 
-      var width = 100,
-          value = 0.5, /* Domain assumes to be [0 - 1] */
-          event,
-          x = 0,
-          y = 0;
-
-      function slider (selection) {
-
-          //Line to represent the current value
-          var valueLine = selection.append("line")
-              .attr("x1", x)
-              .attr("x2", x + (width * value))
-              .attr("y1", y)
-              .attr("y2", y)
-              .style({stroke: "#51CB3F",
-                      "stroke-linecap": "round",
-                      "stroke-width": 6 });
-
-          //Line to show the remaining value
-          var emptyLine = selection.append("line")
-              .attr("x1", x + (width * value))
-              .attr("x2", x + width)
-              .attr("y1", y)
-              .attr("y2", y)
-              .style({
-                  "stroke": "#ECECEC",
-                  "stroke-linecap": "round",
-                  "stroke-width": 6
-              });
-
-          var drag = d3.drag().on("drag", function() {
-              var newX = d3.mouse(this)[0];
-
-              if (newX < x)
-                  newX = x;
-              else if (newX > x + width)
-                  newX = x + width;
-
-              value = (newX - x) / width;
-              valueCircle.attr("cx", newX);
-              valueLine.attr("x2", x + (width * value));
-              emptyLine.attr("x1", x + (width * value));
-
-              if (event)
-                  event();
-
-              d3.event.sourceEvent.stopPropagation();
-          })
-
-          //Draggable circle to represent the current value
-          var valueCircle = selection.append("circle")
-              .attr("cx", x + (width * value))
-              .attr("cy", y)
-              .attr("r", 8)
-              .style({
-                  "stroke": "black",
-                  "stroke-width": 1.0,
-                  "fill": "white"
-              })
-              .call(drag);
-      }
-
-      slider.x = function (val) { x = val; return slider; }
-      slider.y = function (val) { y = val; return slider; }
-      slider.value = function (val) {
-          if (val) {
-              value = val;
-              return slider;
-          } else {
-              return value;
-          }
-      }
-      slider.width = function (val) { width = val; return slider; }
-      slider.event = function (val) { event = val;  return slider; }
-      return slider;
-  }
 
   function parseLine (line) {
     var wordArray = line["Lyrics"].split(" ");
@@ -259,12 +182,12 @@ h1{
   var circles;
 
   var mainsvg = d3.select("#main"),
-  g = mainsvg.append("g").attr("transform", "translate(" + 0 + "," + axisPadding  + ")"),
-  slider1 = new simpleSlider();
-  slider1.width(200).x(30).y(200).value(1.0).event(function(){
-    });
+  g = mainsvg.append("g").attr("transform", "translate(" + 0 + "," + axisPadding  + ")");
+  // slider1 = new simpleSlider();
+  // slider1.width(200).x(30).y(200).value(1.0).event(function(){
+  //   });
   // mainsvg.call(slider1);
-  
+
 
   mainsvg.append("text")
   .attr("id", "SongName")
@@ -300,9 +223,9 @@ h1{
   .attr("class", "mainAxis")
   .call(XAxis);
 
-  mainsvg.append("text")             
+  mainsvg.append("text")
       .attr("transform",
-            "translate(" + (400) + " ," + 
+            "translate(" + (400) + " ," +
                            (750) + ")")
       .style("text-anchor", "middle")
       .text("temp label");
@@ -329,8 +252,8 @@ h1{
       return year.Year === currentYear;
   }
 
-    
-  d3.csv("billboard_lyrics_1964-2017.csv", parseLine, function (error, data) { 
+
+  d3.csv("billboard_lyrics_1964-2017.csv", parseLine, function (error, data) {
 
     rawData = data;
     nestedData = d3.nest()
@@ -358,7 +281,7 @@ h1{
 
 
   var topNWords = topWords.slice(0, nWords);
-        
+
     var selectedYear = yearData.find(isYear);
     console.log(yearData);
     var yearSongs = selectedYear.Songs;
@@ -413,7 +336,7 @@ h1{
     /*simulation
     .nodes(wordPoints)
     .on("tick", updateDisplay);
-  
+
 
    updateDisplay();
 
@@ -428,7 +351,7 @@ h1{
         d3.selectAll("circle").remove();
         total = parseInt(slider2.value) + 1965;
         var topNWords = topWords.slice(0, nWords);
-        
+
         currentYear = (total).toString();
         document.getElementById("yearDisplay").innerHTML = "Year: " + currentYear;
 
