@@ -266,11 +266,30 @@
             .style("opacity", "0")
             .call(YAxis);
 
+        mainsvg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - 26)
+            .attr("x",0 - (350))
+            .attr("dy", "1.2em")
+            .style("text-anchor", "middle")
+            .attr("fill","white")
+            .attr("font-size","1.5em")
+            .text("% of Lyrics in top 500 most popular words");
+
         mainsvg.append("g")
             .attr("transform", "translate(0, " + (graphHeight - axisPadding * 2) + ")")
             .attr("class", "mainAxis")
             .style("opacity", "0")
             .call(XAxis);
+
+        mainsvg.append("text")             
+            .attr("transform",
+            "translate(" + (650) + " ," + 
+                           (750) + ")")
+            .style("text-anchor", "middle")
+            .attr("fill","white")
+            .attr("font-size","2em")
+            .text("Song Rank");
 
         function XAxis(g) {
             g.call(d3.axisTop(xScaleMain));
@@ -278,6 +297,8 @@
             g.selectAll(".tick text")
                 .attr("fill", "#AAABB8");
         }
+
+
 
         function YAxis(g) {
             g.call(d3.axisLeft(yScaleMain));
