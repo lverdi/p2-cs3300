@@ -134,7 +134,7 @@
     <script>
         var graph_svg_width = 1200;
         var graph_svg_height = 800;
-        var text_color = "white";
+        var text_color = "slate grey";
         var accent_color = "#2E9CCA";
 
         var graph_svg = d3.select("#main").append("svg")
@@ -260,7 +260,7 @@
             var song_data = song_data_all.filter(song => song.Year == year);
             var overlap_top = overlap_top_all.filter(connection => connection.year == year);
 
-            var separationForce = 100;
+            var separationForce = 75;
             var simulation = d3.forceSimulation()
                 .force("link", d3.forceLink())
                 .force("charge", d3.forceManyBody().strength(-separationForce))
