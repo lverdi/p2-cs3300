@@ -58,7 +58,7 @@
 
         #yearDisplay {
             color: #AAABB8;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Raleway', sans-serif;
             font-size: 24px;
             margin-left: 46%;
         }
@@ -152,7 +152,7 @@
 <body>
     <div id="title" align="center">
         <h1>Lyric analysis of 50 years of Billboard Top 100 songs</h1>
-        <p> We looked at every song on the year-end Billboard Top 100 chart from 1965 to 2017 and analyzed the lyrics to find out how simple (percentage of words that are the 1000 most common in the English language), repetitive (percentage of repeated words in a single song), and similar (percentage of shared words between two songs) they are. <br><br> You can move the slider to select top 100 songs from a year, or search for a word to see where it appears in the data.</p>
+        <p> We looked at every song on the year-end Billboard Top 100 chart from 1965 to 2017 and analyzed the lyrics to find out how simple (percentage of words that are the 500 most common in the English language), repetitive (percentage of repeated words in a single song), and similar (percentage of shared words between two songs) they are. <br><br> You can move the slider to select top 100 songs from a year, or search for a word to see where it appears in the year's top song lyrics.</p>
     </div>
     <div class="center" align="center" id="center">
         <div class="toolbar">
@@ -163,7 +163,7 @@
             <input class="slider" id="slider2" type="range" min="0" max="52" value="52" />
         </div>
 
-        <svg id="main" width='90%' height='750' align="center"></svg>
+        <svg id="main" width='90%' height='830' align="center"></svg>
         <svg id="info" width='90%' height='600' align="center"></svg>
 
         <div class="main" id="main2">
@@ -210,12 +210,28 @@
         var wordPoints = [];
         var circles;
         var nestedData;
+        var clicked = false;
 
         var mainsvg = d3.select("#main"),
             g = mainsvg.append("g").attr("transform", "translate(" + 0 + "," + axisPadding + ")");
         var infosvg = d3.select("#info");
 
         document.getElementById("slider2").style.width = graphWidth;
+        var format = d3.format(".0%");
+        var xScaleMain = d3.scaleLinear()
+            .domain([1, 100])
+            .range([axisPadding + 60, graphWidth - axisPadding]);
+
+        var yScaleMain = d3.scaleLinear()
+            .domain([.2, .90])
+            .range([graphHeight - axisPadding * 2 - 80, axisPadding]);
+
+        var rScaleTiers = d3.scaleLinear()
+            .domain([1, 70])
+            .range([5, 10]);
+
+        var fillScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5]).range(["#FEFFFF", "#090977", "#9f0aad", "#ff269c", "#05b27b", "#f73636"]);
+        var inverseFillScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5]).range(["#090977", "#FEFFFF", "#FEFFFF", "#FEFFFF", "#FEFFFF", "#FEFFFF"]);
 
         mainsvg.append("text")
             .attr("id", "SongName")
@@ -245,29 +261,216 @@
             .style("opacity", "1")
             .text("Click on a song to get more details");
 
-        var xScaleMain = d3.scaleLinear()
-            .domain([1, 100])
-            .range([axisPadding, graphWidth - axisPadding]);
+        mainsvg.append("text")
+            .attr("class", "loadtext")
+            .attr("x", graphWidth / 2 + 60)
+            .attr("y", graphHeight - axisPadding - 80)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "18pt")
+            .style("opacity", "0")
+            .text("Billboard Ranking");
 
-        var yScaleMain = d3.scaleLinear()
-            .domain([15, 90])
-            .range([graphHeight - axisPadding, axisPadding]);
+        mainsvg.append("text")
+            .attr("class", "loadtext")
+            .attr("transform", "rotate(-90)")
+            .attr("x", -((graphHeight - 60) / 2))
+            .attr("y", 30)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "18pt")
+            .style("opacity", "0")
+            .text("% of lyrics within Top 500 English words");
 
-        var rScaleTiers = d3.scaleLinear()
-            .domain([1, 70])
-            .range([5, 10]);
+        mainsvg.append("text")
+            .attr("class", "loadtext")
+            .attr("x", graphWidth / 8)
+            .attr("y", graphHeight - axisPadding - 60)
+            .attr("text-anchor", "end")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "15pt")
+            .style("opacity", "0")
+            .text("Top #1-100");
 
-        var fillScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5]).range(["#FEFFFF", "#090977", "#9f0aad", "#ff269c", "#05b27b", "#f73636"]);
-        var inverseFillScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5]).range(["#090977", "#FEFFFF", "#FEFFFF", "#FEFFFF", "#FEFFFF", "#FEFFFF"]);
+        mainsvg.append("circle")
+            .attr("class", "loadtext")
+            .attr("cx", graphWidth * 9 / 64)
+            .attr("cy", graphHeight - axisPadding - 67)
+            .attr("r", 14)
+            .attr("fill", "#FFFFFF")
+            .style("opacity", "0");
+
+        mainsvg.append("text")
+            .attr("class", "loadtext")
+            .attr("x", graphWidth / 8)
+            .attr("y", graphHeight - axisPadding - 20)
+            .attr("text-anchor", "end")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "15pt")
+            .style("opacity", "0")
+            .text("Top #101-200");
+
+        mainsvg.append("circle")
+            .attr("class", "loadtext")
+            .attr("cx", graphWidth * 9 / 64)
+            .attr("cy", graphHeight - axisPadding - 27)
+            .attr("r", 14)
+            .attr("fill", "#090977")
+            .style("opacity", "0");
+
+        mainsvg.append("text")
+            .attr("class", "loadtext")
+            .attr("x", graphWidth / 4)
+            .attr("y", graphHeight - axisPadding - 60)
+            .attr("text-anchor", "end")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "15pt")
+            .style("opacity", "0")
+            .text("Top #201-300");
+
+        mainsvg.append("circle")
+            .attr("class", "loadtext")
+            .attr("cx", graphWidth * 17 / 64)
+            .attr("cy", graphHeight - axisPadding - 67)
+            .attr("r", 14)
+            .attr("fill", "#9f0aad")
+            .style("opacity", "0");
+
+        mainsvg.append("text")
+            .attr("class", "loadtext")
+            .attr("x", graphWidth / 4)
+            .attr("y", graphHeight - axisPadding - 20)
+            .attr("text-anchor", "end")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "15pt")
+            .style("opacity", "0")
+            .text("Top #301-400");
+
+        mainsvg.append("circle")
+            .attr("class", "loadtext")
+            .attr("cx", graphWidth * 17 / 64)
+            .attr("cy", graphHeight - axisPadding - 27)
+            .attr("r", 14)
+            .attr("fill", "#ff269c")
+            .style("opacity", "0");
+
+        mainsvg.append("text")
+            .attr("class", "loadtext")
+            .attr("x", graphWidth * 3 / 8)
+            .attr("y", graphHeight - axisPadding - 60)
+            .attr("text-anchor", "end")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "15pt")
+            .style("opacity", "0")
+            .text("Top #401-500");
+
+        mainsvg.append("circle")
+            .attr("class", "loadtext")
+            .attr("cx", graphWidth * 25 / 64)
+            .attr("cy", graphHeight - axisPadding - 67)
+            .attr("r", 14)
+            .attr("fill", "#05b27b")
+            .style("opacity", "0");
+
+        mainsvg.append("text")
+            .attr("class", "loadtext")
+            .attr("x", graphWidth * 3 / 8)
+            .attr("y", graphHeight - axisPadding - 20)
+            .attr("text-anchor", "end")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "15pt")
+            .style("opacity", "0")
+            .text("All top words");
+
+        mainsvg.append("circle")
+            .attr("class", "loadtext")
+            .attr("id", "opaqueload")
+            .attr("cx", graphWidth * 25 / 64)
+            .attr("cy", graphHeight - axisPadding - 27)
+            .attr("r", 14)
+            .attr("fill", "white")
+            .style("opacity", "0");
+
+        mainsvg.append("text")
+            .attr("class", "loadtext")
+            .attr("x", graphWidth * 43 / 64)
+            .attr("y", graphHeight - axisPadding - 3)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "12pt")
+            .style("opacity", "0")
+            .text("1");
+
+        mainsvg.append("circle")
+            .attr("class", "loadtext")
+            .attr("cx", graphWidth * 43 / 64)
+            .attr("cy", graphHeight - axisPadding - 37)
+            .attr("r", rScaleTiers(1))
+            .attr("fill", "#38c4ff")
+            .style("opacity", "0");
+
+        mainsvg.append("text")
+            .attr("class", "loadtext")
+            .attr("x", graphWidth * 45 / 64)
+            .attr("y", graphHeight - axisPadding - 3)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "12pt")
+            .style("opacity", "0")
+            .text("50");
+
+        mainsvg.append("circle")
+            .attr("class", "loadtext")
+            .attr("cx", graphWidth * 45 / 64)
+            .attr("cy", graphHeight - axisPadding - 37)
+            .attr("r", rScaleTiers(50))
+            .attr("fill", "#38c4ff")
+            .style("opacity", "0");
+
+        mainsvg.append("text")
+            .attr("class", "loadtext")
+            .attr("x", graphWidth * 47 / 64)
+            .attr("y", graphHeight - axisPadding - 3)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "12pt")
+            .style("opacity", "0")
+            .text("100");
+
+        mainsvg.append("circle")
+            .attr("class", "loadtext")
+            .attr("cx", graphWidth * 47 / 64)
+            .attr("cy", graphHeight - axisPadding - 37)
+            .attr("r", rScaleTiers(100))
+            .attr("fill", "#38c4ff")
+            .style("opacity", "0");
+
+        mainsvg.append("text")
+            .attr("class", "loadtext")
+            .attr("x", graphWidth * 49 / 64)
+            .attr("y", graphHeight - axisPadding - 3)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#AAABB8")
+            .style("font-size", "12pt")
+            .style("opacity", "0")
+            .text("200");
+
+        mainsvg.append("circle")
+            .attr("class", "loadtext")
+            .attr("cx", graphWidth * 49 / 64)
+            .attr("cy", graphHeight - axisPadding - 38)
+            .attr("r", rScaleTiers(200))
+            .attr("fill", "#38c4ff")
+            .style("opacity", "0");
 
         mainsvg.append("g")
-            .attr("transform", "translate(" + axisPadding / 2 + ", " + 0 + ")")
+            .attr("transform", "translate(" + (60 + (axisPadding / 2)) + ", " + 0 + ")")
             .attr("class", "mainAxis")
             .style("opacity", "0")
             .call(YAxis);
 
         mainsvg.append("g")
-            .attr("transform", "translate(0, " + (graphHeight - axisPadding * 2) + ")")
+            .attr("transform", "translate(0, " + (graphHeight - axisPadding * 2 - 80) + ")")
             .attr("class", "mainAxis")
             .style("opacity", "0")
             .call(XAxis);
@@ -280,7 +483,7 @@
         }
 
         function YAxis(g) {
-            g.call(d3.axisLeft(yScaleMain));
+            g.call(d3.axisLeft(yScaleMain).tickFormat(format));
             g.select(".domain").remove();
             g.selectAll(".tick:not(:first-of-type) line")
                 .attr("stroke", "#AAABB8")
@@ -359,8 +562,8 @@
                     for (var j = 0; j < songLyrics.length; j++) {
                         var lyric = songLyrics[j];
                         if (lyric.includes(input)) {
-                            document.getElementById("song" + s.Rank).style.fill = "#3399ff";
-                            document.getElementById("song" + s.Rank).style.opacity = 0.8;
+                            document.getElementById("song" + s.Rank).style.fill = "#f73636";
+                            document.getElementById("song" + s.Rank).style.opacity = 0.7;
                             var idx = topNWords.indexOf(lyric);
                             if (idx != -1) {
                                 var tier = Math.floor(idx / 100);
@@ -409,8 +612,8 @@
                         tierWords[5].push(word);
                     }
                 }
-                var uniqueRatio = 100 * uniqueInTop / uniqueWords;
-                var totalRatio = 100 * totalInTop / totalWords;
+                var uniqueRatio = uniqueInTop / uniqueWords;
+                var totalRatio = totalInTop / totalWords;
 
                 for (var k = 0; k < tierList.length - 1; k++) {
                     if (tierList[k] != 0) {
@@ -450,7 +653,7 @@
                     .attr("class", "songbubbles")
                     .attr("r", rScaleTiers(current.totalInTop + add))
                     .attr("cx", xScaleMain(current.rank))
-                    .attr("cy", yScaleMain(Math.max(current.total, 15)))
+                    .attr("cy", yScaleMain(Math.max(current.total, .20)))
                     .style("fill", "white")
                     .style("opacity", 0.25);
             }
@@ -465,7 +668,7 @@
                 .attr("cx", function(d) {
                     return xScaleMain(d.rank);
                 })
-                .attr("cy", yScaleMain(50))
+                .attr("cy", yScaleMain(.50))
                 .attr("class", "wordTiers")
                 .style("fill", function(d) {
                     return fillScale(d.tier);
@@ -476,14 +679,16 @@
                 });
 
             $(".wordTiers").click(function(event) {
-                event.preventDefault();
-
-                $("body, html").animate({
-                    scrollTop: $("#info").offset().top
-                }, 400, 'linear');
+              if (!clicked) {
+                  event.preventDefault();
+                  $("body, html").animate({
+                      scrollTop: $("#info").offset().top
+                  }, 400, 'linear');
+              }
             });
 
             circles.on("click", function(d) {
+                clicked = true;
                 d3.selectAll("#info > *").remove();
                 var infosvg = d3.select('#info');
                 var selected = points.find(function(s) {
@@ -492,38 +697,55 @@
                 d3.select("#info").style("background-color", "#464866");
                 infosvg.append("text")
                     .attr("text-anchor", "middle")
-                    .attr("x", infoWidth / 2)
+                    .attr("x", infoWidth * 2 / 3)
                     .attr("y", infoHeight / 11)
                     .text("#" + selected.rank + " " + selected.title.toUpperCase() + " - " + capFirstWord(selected.artist))
                     .style("fill", "#AAABB8")
-                    .style("font-size", "32px");
-
+                    .style("font-size", "30px");
                 infosvg.append("text")
                     .attr("text-anchor", "middle")
-                    .attr("x", infoWidth / 2)
-                    .attr("y", infoHeight * 3 / 11)
-                    .text("% unique")
+                    .attr("x", infoWidth * 2 / 3)
+                    .attr("y", infoHeight * 2 / 11)
+                    .text("% of words in top 500: " + Math.round(selected.total * 100) + "%")
                     .style("fill", "#AAABB8")
-                    .style("font-size", "28px");
+                    .style("font-size", "25px");
+                infosvg.append("text")
+                    .attr("x", 20)
+                    .attr("y", 50)
+                    .text("lyric breakdown")
+                    .attr("alignment-baseline", "middle")
+                    .attr("font-family", 'Roboto')
+                    .attr("font-size", "45px")
+                    .attr("fill", "white")
+                    .attr("opacity", 0.8);
+                infosvg.append("text")
+                    .attr("x", 20)
+                    .attr("y", 90)
+                    .text("click a section of the pie to see words in each tier")
+                    .attr("alignment-baseline", "middle")
+                    .attr("font-family", 'Roboto')
+                    .attr("font-size", "22px")
+                    .attr("fill", "white")
+                    .attr("opacity", 0.8);
 
-                printSongInfo(infosvg, "Word Count  ", selected.wordCount, "#38C4FF", 4/12);
-                printSongInfo(infosvg, "Top #1-100  ", selected.tiers[0], "#FEFFFF", 5/12);
-                printSongInfo(infosvg, "Top #101-200  ", selected.tiers[1], "#090977", 6/12);
-                printSongInfo(infosvg, "Top #201-300  ", selected.tiers[2], "#9f0aad", 7/12);
-                printSongInfo(infosvg, "Top #301-400  ", selected.tiers[3], "#ff269c", 8/12);
-                printSongInfo(infosvg, "Top #401-500  ", selected.tiers[4], "#05b27b", 9/12);
-                printSongInfo(infosvg, "Top #500+  ", selected.tiers[5], "#f73636", 10/12);
+                printSongInfo(infosvg, "Word Count: " + selected.wordCount, -1, 4/12);
+                printSongInfo(infosvg, "Top #1-100:     " + selected.tiers[0], 0, 5/12);
+                printSongInfo(infosvg, "Top #101-200:   " + selected.tiers[1], 1, 6/12);
+                printSongInfo(infosvg, "Top #201-300:   " + selected.tiers[2], 2, 7/12);
+                printSongInfo(infosvg, "Top #301-400:   " + selected.tiers[3], 3, 8/12);
+                printSongInfo(infosvg, "Top #401-500:   " + selected.tiers[4], 4, 9/12);
+                printSongInfo(infosvg, "Top #500+:      " + selected.tiers[5], 5, 10/12);
 
 
-                var radius = infoHeight * 0.25;
+                var radius = infoHeight * 0.3;
                 var donutWidth = radius / 2;
                 var piesvg = d3.select('#info')
                     .append('svg')
                     .attr('width', infoHeight)
                     .attr('height', infoHeight)
                     .append('g')
-                    .attr('transform', 'translate(' + infoHeight / 3 +
-                        ',' + infoHeight / 2 + ')');
+                    .attr('transform', 'translate(' + infoHeight / 2 +
+                        ',' + infoHeight * 5 / 9 + ')');
 
                 var arc = d3.arc()
                     .innerRadius(radius - donutWidth)
@@ -565,7 +787,7 @@
                         infosvg.append("text")
                             .attr("text-anchor", "middle")
                             .attr("class", "wordDetails")
-                            .attr("x", infoWidth * 0.775)
+                            .attr("x", infoWidth * 2 / 3)
                             .attr("y", infoHeight * 3 / 11)
                             .text(text)
                             .style("fill", fillScale(d.index))
@@ -576,14 +798,14 @@
                         } else {
                             d3.select("#info").style("background-color", fillScale(d.index));
                         }
-                        d3.selectAll("#info text").style("fill", inverseFillScale(d.index));
+                        d3.selectAll("#info text:not(.details)").style("fill", inverseFillScale(d.index));
                     });
             });
 
             var simulation = d3.forceSimulation();
             simulation
                 .force("x", d3.forceX(d => xScaleMain(d.rank)).strength(1))
-                .force("y", d3.forceY(d => yScaleMain(Math.max(d.total, 15))).strength(1))
+                .force("y", d3.forceY(d => yScaleMain(Math.max(d.total, .20))).strength(1))
                 .force("collision", d3.forceCollide(d => d.r));
 
             simulation
@@ -596,20 +818,34 @@
             updateDisplay();
             mainsvg.select("#loading").style("opacity", "0");
             mainsvg.selectAll(".mainAxis").style("opacity", "1");
+            mainsvg.selectAll(".loadtext").style("opacity", "1");
+            mainsvg.select("#opaqueload").style("opacity", "0.25");
         }
 
-        function printSongInfo (svg, str1, str2, color, pos) {
-            svg.append("text")
+        function printSongInfo (s, str, index, pos) {
+            var padding = 4;
+            var textcolor = inverseFillScale(index);
+            var highlight = fillScale(index);
+            if (index == -1) {
+              textcolor = "#090977";
+              highlight = "#38c4ff";
+            }
+            var textarea = s.append("text")
             .attr("text-anchor", "start")
-            .attr("x", infoWidth / 3)
+            .attr("class", "details")
+            .attr("x", infoHeight * 1.1)
             .attr("y", infoHeight * pos)
-            .text(str1)
-            .style("fill", "#AAABB8")
-            .style("font-size", "22px")
-            .append('tspan')
-            .text(str2)
-            .style("fill", color)
-            .style("font-size", "26px");
+            .text(str)
+            .style("fill", textcolor)
+            .style("font-size", "24px")
+            .node().getBBox();
+            // inspired by https://stackoverflow.com/questions/15500894/background-color-of-text-in-svg
+            s.insert("rect", "text")
+            .attr("x", textarea.x - padding)
+            .attr("y", textarea.y - padding)
+            .attr("width", textarea.width + (padding * 4))
+            .attr("height", textarea.height + (padding * 2))
+            .style("fill", highlight);
         }
 
 
@@ -619,15 +855,10 @@
             }).join(' ');
         }
 
-        //=====================
-        //SIMILARITY.HTML
-        //IMPORTED AND FIXED UP
-        //=====================
-
         var graph_svg_width = d3.select("#main")._groups[0][0].clientWidth;
         var graph_svg_height = 800;
         var text_color = "white";
-        var accent_color = "#2E9CCA";
+        var accent_color = "#38c4ff";
 
         var graph_svg = d3.select("#main2").append("svg")
             .attr("id", "graph")
@@ -644,7 +875,7 @@
             .text("lyric similarity graph")
             .attr("alignment-baseline", "middle")
             .attr("font-family", 'Roboto')
-            .attr("font-size", "50px")
+            .attr("font-size", "45px")
             .attr("fill", "white")
             .attr("opacity", 0.8);
         graph_svg.append("text")
@@ -653,11 +884,9 @@
             .text("hover over nodes and edges to see song information")
             .attr("alignment-baseline", "middle")
             .attr("font-family", 'Roboto')
-            .attr("font-size", "24px")
+            .attr("font-size", "22px")
             .attr("fill", "white")
             .attr("opacity", 0.8);
-
-
 
         var info_svg_width = 400;
         var info_svg_width_start = graph_svg_width - info_svg_width;
@@ -686,7 +915,7 @@
         gradient.append("stop")
             .attr('class', 'end')
             .attr("offset", "100%")
-            .attr("stop-color", "gray")
+            .attr("stop-color", "#090977")
             .attr("stop-opacity", 1);
 
         var mini_offset = 60;
@@ -831,7 +1060,7 @@
             var simulation = d3.forceSimulation()
                 .force("link", d3.forceLink())
                 .force("charge", d3.forceManyBody().strength(-separationForce))
-                .force("center", d3.forceCenter(graph_svg_width / 3, graph_svg_height / 1.7));
+                .force("center", d3.forceCenter(graph_svg_width / 3, graph_svg_height / 2));
 
             var totalWordArray = [];
             for (var i = 0; i < song_data.length; i++) {
@@ -855,7 +1084,7 @@
             function colorScale(rank) {
                 var internalColorScale = d3.scaleLinear()
                     .domain(d3.extent(totalRankArray))
-                    .range([accent_color, "gray"])
+                    .range([accent_color, "#090977"])
                     .clamp(true);
                 return internalColorScale(rank);
             }
