@@ -215,6 +215,92 @@
             g = mainsvg.append("g").attr("transform", "translate(" + 0 + "," + axisPadding + ")");
         var infosvg = d3.select("#info");
 
+        //key
+        mainsvg.append("rect")
+            .attr("x",50)
+            .attr("y",0)
+            .attr("fill","#FEFFFF")
+            .attr("width",30)
+            .attr("height",30)
+            .attr("stroke","black")
+            .attr("stroke-width","3px");
+
+        mainsvg.append("text")
+            .attr("x", 120)
+            .attr("y", 20)
+            .attr("text-anchor", "middle")
+            .attr("fill", "white")
+            .text("tier 1")
+            .style("font-size", "17pt");
+
+        mainsvg.append("rect")
+            .attr("x",300)
+            .attr("y",0)
+            .attr("fill","#090977")
+            .attr("width",30)
+            .attr("height",30)
+            .attr("stroke","black")
+            .attr("stroke-width","3px");
+
+        mainsvg.append("text")
+            .attr("x", 370)
+            .attr("y", 20)
+            .attr("text-anchor", "middle")
+            .attr("fill", "white")
+            .text("tier 1")
+            .style("font-size", "17pt");
+
+        mainsvg.append("rect")
+            .attr("x",550)
+            .attr("y",0)
+            .attr("fill","#9f0aad")
+            .attr("width",30)
+            .attr("height",30)
+            .attr("stroke","black")
+            .attr("stroke-width","3px");
+
+        mainsvg.append("text")
+            .attr("x", 620)
+            .attr("y", 20)
+            .attr("text-anchor", "middle")
+            .attr("fill", "white")
+            .text("tier 1")
+            .style("font-size", "17pt");
+
+        mainsvg.append("rect")
+            .attr("x",800)
+            .attr("y",0)
+            .attr("fill","#ff269c")
+            .attr("width",30)
+            .attr("height",30)
+            .attr("stroke","black")
+            .attr("stroke-width","3px");
+
+        mainsvg.append("text")
+            .attr("x", 870)
+            .attr("y", 20)
+            .attr("text-anchor", "middle")
+            .attr("fill", "white")
+            .text("tier 1")
+            .style("font-size", "17pt");
+
+        mainsvg.append("rect")
+            .attr("x",1050)
+            .attr("y",0)
+            .attr("fill","#05b27b")
+            .attr("width",30)
+            .attr("height",30)
+            .attr("stroke","black")
+            .attr("stroke-width","3px");
+
+        mainsvg.append("text")
+            .attr("x", 1120)
+            .attr("y", 20)
+            .attr("text-anchor", "middle")
+            .attr("fill", "white")
+            .text("tier 1")
+            .style("font-size", "17pt");
+
         document.getElementById("slider2").style.width = graphWidth;
 
         mainsvg.append("text")
