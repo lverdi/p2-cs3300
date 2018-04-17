@@ -216,92 +216,6 @@
             g = mainsvg.append("g").attr("transform", "translate(" + 0 + "," + axisPadding + ")");
         var infosvg = d3.select("#info");
 
-        //key
-        mainsvg.append("rect")
-            .attr("x",50)
-            .attr("y",0)
-            .attr("fill","#FEFFFF")
-            .attr("width",30)
-            .attr("height",30)
-            .attr("stroke","black")
-            .attr("stroke-width","3px");
-
-        mainsvg.append("text")
-            .attr("x", 170)
-            .attr("y", 20)
-            .attr("text-anchor", "middle")
-            .attr("fill", "white")
-            .text("top 1-100 words")
-            .style("font-size", "17pt");
-
-        mainsvg.append("rect")
-            .attr("x",300)
-            .attr("y",0)
-            .attr("fill","#090977")
-            .attr("width",30)
-            .attr("height",30)
-            .attr("stroke","black")
-            .attr("stroke-width","3px");
-
-        mainsvg.append("text")
-            .attr("x", 430)
-            .attr("y", 20)
-            .attr("text-anchor", "middle")
-            .attr("fill", "white")
-            .text("top 101-200 words")
-            .style("font-size", "17pt");
-
-        mainsvg.append("rect")
-            .attr("x",550)
-            .attr("y",0)
-            .attr("fill","#9f0aad")
-            .attr("width",30)
-            .attr("height",30)
-            .attr("stroke","black")
-            .attr("stroke-width","3px");
-
-        mainsvg.append("text")
-            .attr("x", 680)
-            .attr("y", 20)
-            .attr("text-anchor", "middle")
-            .attr("fill", "white")
-            .text("top 201-300 words")
-            .style("font-size", "17pt");
-
-        mainsvg.append("rect")
-            .attr("x",800)
-            .attr("y",0)
-            .attr("fill","#ff269c")
-            .attr("width",30)
-            .attr("height",30)
-            .attr("stroke","black")
-            .attr("stroke-width","3px");
-
-        mainsvg.append("text")
-            .attr("x", 930)
-            .attr("y", 20)
-            .attr("text-anchor", "middle")
-            .attr("fill", "white")
-            .text("top 301-400 words")
-            .style("font-size", "17pt");
-
-        mainsvg.append("rect")
-            .attr("x",1050)
-            .attr("y",0)
-            .attr("fill","#05b27b")
-            .attr("width",30)
-            .attr("height",30)
-            .attr("stroke","black")
-            .attr("stroke-width","3px");
-
-        mainsvg.append("text")
-            .attr("x", 1180)
-            .attr("y", 20)
-            .attr("text-anchor", "middle")
-            .attr("fill", "white")
-            .text("top 401-500 words")
-            .style("font-size", "17pt");
-
         document.getElementById("slider2").style.width = graphWidth;
         var format = d3.format(".0%");
         var xScaleMain = d3.scaleLinear()
@@ -555,30 +469,11 @@
             .style("opacity", "0")
             .call(YAxis);
 
-        mainsvg.append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - 26)
-            .attr("x",0 - (350))
-            .attr("dy", "1.2em")
-            .style("text-anchor", "middle")
-            .attr("fill","white")
-            .attr("font-size","1.5em")
-            .text("% of Lyrics in top 500 most popular words");
-
         mainsvg.append("g")
             .attr("transform", "translate(0, " + (graphHeight - axisPadding * 2 - 80) + ")")
             .attr("class", "mainAxis")
             .style("opacity", "0")
             .call(XAxis);
-
-        mainsvg.append("text")             
-            .attr("transform",
-            "translate(" + (650) + " ," + 
-                           (750) + ")")
-            .style("text-anchor", "middle")
-            .attr("fill","white")
-            .attr("font-size","2em")
-            .text("Song Rank");
 
         function XAxis(g) {
             g.call(d3.axisTop(xScaleMain));
@@ -586,8 +481,6 @@
             g.selectAll(".tick text")
                 .attr("fill", "#AAABB8");
         }
-
-
 
         function YAxis(g) {
             g.call(d3.axisLeft(yScaleMain).tickFormat(format));
@@ -882,7 +775,8 @@
                     })
                     .on("click", function(d) {
                         d3.selectAll(".wordDetails").remove();
-                        var w = selected.tierWords;
+                        var w = selected.words[d.index];
+                        console.log(w);
                         var range = (d.index + 1) * 100;
                         var text;
                         if (d.index != 5) {
@@ -906,6 +800,18 @@
                             d3.select("#info").style("background-color", fillScale(d.index));
                         }
                         d3.selectAll("#info text:not(.details)").style("fill", inverseFillScale(d.index));
+                        for (var i = 0; i < w.length; i++) {
+                          if (w[i] != "") {
+                            infosvg.append("text")
+                                .attr("text-anchor", "middle")
+                                .attr("class", "wordDetails")
+                                .attr("x", infoWidth * (19 + 2 * (i % 6)) / 36)
+                                .attr("y", infoHeight * (14 + 2 * (Math.floor(i / 6))) / 44)
+                                .text(w[i])
+                                .style("fill", inverseFillScale(d.index))
+                                .style("font-size", "17px");
+                          }
+                        }
                     });
             });
 
