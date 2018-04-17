@@ -88,7 +88,9 @@
             background-color: #464866;
         }
 
-        #main2, #links line, #nodes circle {
+        #main2,
+        #links line,
+        #nodes circle {
             transition: none;
         }
 
@@ -592,7 +594,14 @@
             for (var i = 0; i < yearSongs.length; i++) {
                 var s = yearSongs[i];
                 var tierList = [0, 0, 0, 0, 0, 0];
-                var tierWords = [ [], [], [], [], [], [] ];
+                var tierWords = [
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    []
+                ];
                 var songLyrics = Object.keys(s.Lyrics);
                 var totalWords = 0;
                 var uniqueWords = songLyrics.length;
@@ -679,12 +688,12 @@
                 });
 
             $(".wordTiers").click(function(event) {
-              if (!clicked) {
-                  event.preventDefault();
-                  $("body, html").animate({
-                      scrollTop: $("#info").offset().top
-                  }, 400, 'linear');
-              }
+                if (!clicked) {
+                    event.preventDefault();
+                    $("body, html").animate({
+                        scrollTop: $("#info").offset().top
+                    }, 400, 'linear');
+                }
             });
 
             circles.on("click", function(d) {
@@ -728,13 +737,13 @@
                     .attr("fill", "white")
                     .attr("opacity", 0.8);
 
-                printSongInfo(infosvg, "Word Count: " + selected.wordCount, -1, 4/12);
-                printSongInfo(infosvg, "Top #1-100:     " + selected.tiers[0], 0, 5/12);
-                printSongInfo(infosvg, "Top #101-200:   " + selected.tiers[1], 1, 6/12);
-                printSongInfo(infosvg, "Top #201-300:   " + selected.tiers[2], 2, 7/12);
-                printSongInfo(infosvg, "Top #301-400:   " + selected.tiers[3], 3, 8/12);
-                printSongInfo(infosvg, "Top #401-500:   " + selected.tiers[4], 4, 9/12);
-                printSongInfo(infosvg, "Top #500+:      " + selected.tiers[5], 5, 10/12);
+                printSongInfo(infosvg, "Word Count: " + selected.wordCount, -1, 4 / 12);
+                printSongInfo(infosvg, "Top #1-100:     " + selected.tiers[0], 0, 5 / 12);
+                printSongInfo(infosvg, "Top #101-200:   " + selected.tiers[1], 1, 6 / 12);
+                printSongInfo(infosvg, "Top #201-300:   " + selected.tiers[2], 2, 7 / 12);
+                printSongInfo(infosvg, "Top #301-400:   " + selected.tiers[3], 3, 8 / 12);
+                printSongInfo(infosvg, "Top #401-500:   " + selected.tiers[4], 4, 9 / 12);
+                printSongInfo(infosvg, "Top #500+:      " + selected.tiers[5], 5, 10 / 12);
 
 
                 var radius = infoHeight * 0.3;
@@ -835,30 +844,30 @@
             mainsvg.select("#opaqueload").style("opacity", "0.25");
         }
 
-        function printSongInfo (s, str, index, pos) {
+        function printSongInfo(s, str, index, pos) {
             var padding = 4;
             var textcolor = inverseFillScale(index);
             var highlight = fillScale(index);
             if (index == -1) {
-              textcolor = "#090977";
-              highlight = "#38c4ff";
+                textcolor = "#090977";
+                highlight = "#38c4ff";
             }
             var textarea = s.append("text")
-            .attr("text-anchor", "start")
-            .attr("class", "details")
-            .attr("x", infoHeight * 1.1)
-            .attr("y", infoHeight * pos)
-            .text(str)
-            .style("fill", textcolor)
-            .style("font-size", "24px")
-            .node().getBBox();
+                .attr("text-anchor", "start")
+                .attr("class", "details")
+                .attr("x", infoHeight * 1.1)
+                .attr("y", infoHeight * pos)
+                .text(str)
+                .style("fill", textcolor)
+                .style("font-size", "24px")
+                .node().getBBox();
             // inspired by https://stackoverflow.com/questions/15500894/background-color-of-text-in-svg
             s.insert("rect", "text")
-            .attr("x", textarea.x - padding)
-            .attr("y", textarea.y - padding)
-            .attr("width", textarea.width + (padding * 4))
-            .attr("height", textarea.height + (padding * 2))
-            .style("fill", highlight);
+                .attr("x", textarea.x - padding)
+                .attr("y", textarea.y - padding)
+                .attr("width", textarea.width + (padding * 4))
+                .attr("height", textarea.height + (padding * 2))
+                .style("fill", highlight);
         }
 
 
@@ -1057,7 +1066,7 @@
             .await(function(error, data1, data2) {
                 song_data_all = data1;
                 overlap_top_all = data2;
-                graphPoints(data1[0].Year);
+                graphPoints(2017);
             });
 
         function graphPoints(year) {
