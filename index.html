@@ -88,7 +88,9 @@
             background-color: #464866;
         }
 
-        #main2, #links line, #nodes circle {
+        #main2,
+        #links line,
+        #nodes circle {
             transition: none;
         }
 
@@ -218,13 +220,13 @@
 
         //key
         mainsvg.append("rect")
-            .attr("x",50)
-            .attr("y",0)
-            .attr("fill","#FEFFFF")
-            .attr("width",30)
-            .attr("height",30)
-            .attr("stroke","black")
-            .attr("stroke-width","3px");
+            .attr("x", 50)
+            .attr("y", 0)
+            .attr("fill", "#FEFFFF")
+            .attr("width", 30)
+            .attr("height", 30)
+            .attr("stroke", "black")
+            .attr("stroke-width", "3px");
 
         mainsvg.append("text")
             .attr("x", 170)
@@ -235,13 +237,13 @@
             .style("font-size", "17pt");
 
         mainsvg.append("rect")
-            .attr("x",300)
-            .attr("y",0)
-            .attr("fill","#090977")
-            .attr("width",30)
-            .attr("height",30)
-            .attr("stroke","black")
-            .attr("stroke-width","3px");
+            .attr("x", 300)
+            .attr("y", 0)
+            .attr("fill", "#090977")
+            .attr("width", 30)
+            .attr("height", 30)
+            .attr("stroke", "black")
+            .attr("stroke-width", "3px");
 
         mainsvg.append("text")
             .attr("x", 430)
@@ -252,13 +254,13 @@
             .style("font-size", "17pt");
 
         mainsvg.append("rect")
-            .attr("x",550)
-            .attr("y",0)
-            .attr("fill","#9f0aad")
-            .attr("width",30)
-            .attr("height",30)
-            .attr("stroke","black")
-            .attr("stroke-width","3px");
+            .attr("x", 550)
+            .attr("y", 0)
+            .attr("fill", "#9f0aad")
+            .attr("width", 30)
+            .attr("height", 30)
+            .attr("stroke", "black")
+            .attr("stroke-width", "3px");
 
         mainsvg.append("text")
             .attr("x", 680)
@@ -269,13 +271,13 @@
             .style("font-size", "17pt");
 
         mainsvg.append("rect")
-            .attr("x",800)
-            .attr("y",0)
-            .attr("fill","#ff269c")
-            .attr("width",30)
-            .attr("height",30)
-            .attr("stroke","black")
-            .attr("stroke-width","3px");
+            .attr("x", 800)
+            .attr("y", 0)
+            .attr("fill", "#ff269c")
+            .attr("width", 30)
+            .attr("height", 30)
+            .attr("stroke", "black")
+            .attr("stroke-width", "3px");
 
         mainsvg.append("text")
             .attr("x", 930)
@@ -286,13 +288,13 @@
             .style("font-size", "17pt");
 
         mainsvg.append("rect")
-            .attr("x",1050)
-            .attr("y",0)
-            .attr("fill","#05b27b")
-            .attr("width",30)
-            .attr("height",30)
-            .attr("stroke","black")
-            .attr("stroke-width","3px");
+            .attr("x", 1050)
+            .attr("y", 0)
+            .attr("fill", "#05b27b")
+            .attr("width", 30)
+            .attr("height", 30)
+            .attr("stroke", "black")
+            .attr("stroke-width", "3px");
 
         mainsvg.append("text")
             .attr("x", 1180)
@@ -558,11 +560,11 @@
         mainsvg.append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", 0 - 26)
-            .attr("x",0 - (350))
+            .attr("x", 0 - (350))
             .attr("dy", "1.2em")
             .style("text-anchor", "middle")
-            .attr("fill","white")
-            .attr("font-size","1.5em")
+            .attr("fill", "white")
+            .attr("font-size", "1.5em")
             .text("% of Lyrics in top 500 most popular words");
 
         mainsvg.append("g")
@@ -571,13 +573,13 @@
             .style("opacity", "0")
             .call(XAxis);
 
-        mainsvg.append("text")             
+        mainsvg.append("text")
             .attr("transform",
-            "translate(" + (650) + " ," + 
-                           (750) + ")")
+                "translate(" + (650) + " ," +
+                (750) + ")")
             .style("text-anchor", "middle")
-            .attr("fill","white")
-            .attr("font-size","2em")
+            .attr("fill", "white")
+            .attr("font-size", "2em")
             .text("Song Rank");
 
         function XAxis(g) {
@@ -699,7 +701,14 @@
             for (var i = 0; i < yearSongs.length; i++) {
                 var s = yearSongs[i];
                 var tierList = [0, 0, 0, 0, 0, 0];
-                var tierWords = [ [], [], [], [], [], [] ];
+                var tierWords = [
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    []
+                ];
                 var songLyrics = Object.keys(s.Lyrics);
                 var totalWords = 0;
                 var uniqueWords = songLyrics.length;
@@ -786,12 +795,12 @@
                 });
 
             $(".wordTiers").click(function(event) {
-              if (!clicked) {
-                  event.preventDefault();
-                  $("body, html").animate({
-                      scrollTop: $("#info").offset().top
-                  }, 400, 'linear');
-              }
+                if (!clicked) {
+                    event.preventDefault();
+                    $("body, html").animate({
+                        scrollTop: $("#info").offset().top
+                    }, 400, 'linear');
+                }
             });
 
             circles.on("click", function(d) {
@@ -835,13 +844,13 @@
                     .attr("fill", "white")
                     .attr("opacity", 0.8);
 
-                printSongInfo(infosvg, "Word Count: " + selected.wordCount, -1, 4/12);
-                printSongInfo(infosvg, "Top #1-100:     " + selected.tiers[0], 0, 5/12);
-                printSongInfo(infosvg, "Top #101-200:   " + selected.tiers[1], 1, 6/12);
-                printSongInfo(infosvg, "Top #201-300:   " + selected.tiers[2], 2, 7/12);
-                printSongInfo(infosvg, "Top #301-400:   " + selected.tiers[3], 3, 8/12);
-                printSongInfo(infosvg, "Top #401-500:   " + selected.tiers[4], 4, 9/12);
-                printSongInfo(infosvg, "Top #500+:      " + selected.tiers[5], 5, 10/12);
+                printSongInfo(infosvg, "Word Count: " + selected.wordCount, -1, 4 / 12);
+                printSongInfo(infosvg, "Top #1-100:     " + selected.tiers[0], 0, 5 / 12);
+                printSongInfo(infosvg, "Top #101-200:   " + selected.tiers[1], 1, 6 / 12);
+                printSongInfo(infosvg, "Top #201-300:   " + selected.tiers[2], 2, 7 / 12);
+                printSongInfo(infosvg, "Top #301-400:   " + selected.tiers[3], 3, 8 / 12);
+                printSongInfo(infosvg, "Top #401-500:   " + selected.tiers[4], 4, 9 / 12);
+                printSongInfo(infosvg, "Top #500+:      " + selected.tiers[5], 5, 10 / 12);
 
 
                 var radius = infoHeight * 0.3;
@@ -929,30 +938,30 @@
             mainsvg.select("#opaqueload").style("opacity", "0.25");
         }
 
-        function printSongInfo (s, str, index, pos) {
+        function printSongInfo(s, str, index, pos) {
             var padding = 4;
             var textcolor = inverseFillScale(index);
             var highlight = fillScale(index);
             if (index == -1) {
-              textcolor = "#090977";
-              highlight = "#38c4ff";
+                textcolor = "#090977";
+                highlight = "#38c4ff";
             }
             var textarea = s.append("text")
-            .attr("text-anchor", "start")
-            .attr("class", "details")
-            .attr("x", infoHeight * 1.1)
-            .attr("y", infoHeight * pos)
-            .text(str)
-            .style("fill", textcolor)
-            .style("font-size", "24px")
-            .node().getBBox();
+                .attr("text-anchor", "start")
+                .attr("class", "details")
+                .attr("x", infoHeight * 1.1)
+                .attr("y", infoHeight * pos)
+                .text(str)
+                .style("fill", textcolor)
+                .style("font-size", "24px")
+                .node().getBBox();
             // inspired by https://stackoverflow.com/questions/15500894/background-color-of-text-in-svg
             s.insert("rect", "text")
-            .attr("x", textarea.x - padding)
-            .attr("y", textarea.y - padding)
-            .attr("width", textarea.width + (padding * 4))
-            .attr("height", textarea.height + (padding * 2))
-            .style("fill", highlight);
+                .attr("x", textarea.x - padding)
+                .attr("y", textarea.y - padding)
+                .attr("width", textarea.width + (padding * 4))
+                .attr("height", textarea.height + (padding * 2))
+                .style("fill", highlight);
         }
 
 
@@ -1151,7 +1160,7 @@
             .await(function(error, data1, data2) {
                 song_data_all = data1;
                 overlap_top_all = data2;
-                graphPoints(data1[0].Year);
+                graphPoints(2017);
             });
 
         function graphPoints(year) {
