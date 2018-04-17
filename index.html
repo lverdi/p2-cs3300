@@ -753,7 +753,7 @@
                     .attr('width', infoHeight)
                     .attr('height', infoHeight)
                     .append('g')
-                    .attr('transform', 'translate(' + infoHeight / 2 +
+                    .attr('transform', 'translate(' + infoHeight / 3 +
                         ',' + infoHeight * 5 / 9 + ')');
 
                 var arc = d3.arc()
@@ -785,7 +785,6 @@
                     .on("click", function(d) {
                         d3.selectAll(".wordDetails").remove();
                         var w = selected.words[d.index];
-                        console.log(w);
                         var range = (d.index + 1) * 100;
                         var text;
                         if (d.index != 5) {
@@ -797,7 +796,7 @@
                         infosvg.append("text")
                             .attr("text-anchor", "middle")
                             .attr("class", "wordDetails")
-                            .attr("x", infoWidth * 2 / 3)
+                            .attr("x", infoWidth * 27 / 36)
                             .attr("y", infoHeight * 3 / 11)
                             .text(text)
                             .style("fill", fillScale(d.index))
@@ -814,7 +813,7 @@
                             infosvg.append("text")
                                 .attr("text-anchor", "middle")
                                 .attr("class", "wordDetails")
-                                .attr("x", infoWidth * (19 + 2 * (i % 6)) / 36)
+                                .attr("x", infoWidth * (22 + 2 * (i % 6)) / 36)
                                 .attr("y", infoHeight * (14 + 2 * (Math.floor(i / 6))) / 44)
                                 .text(w[i])
                                 .style("fill", inverseFillScale(d.index))
@@ -855,7 +854,7 @@
             var textarea = s.append("text")
                 .attr("text-anchor", "start")
                 .attr("class", "details")
-                .attr("x", infoHeight * 1.1)
+                .attr("x", infoHeight * 0.7)
                 .attr("y", infoHeight * pos)
                 .text(str)
                 .style("fill", textcolor)
